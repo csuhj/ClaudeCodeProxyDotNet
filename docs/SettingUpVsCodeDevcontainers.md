@@ -22,6 +22,16 @@ To create a new devcontainer for an already existing project.  This example will
 9. This will create a `.devcontainer/devcontainer.json` file with the above options in it and start pulling and running the appropriate container.
 10. Once the container has started the "><" button in VS Code will show you are connected to a container.  If you open a terminal you will see you are running inside the isolated container, with the project mounted to `/workspaces/<projectdir>`
 
+## Temporarily opening ports for testing
+
+If you want to run an application that accepts incomming network connections then ports can be forwarded from the devcontainer to the host by using the "Forward a Port" command in the VS Code command palette.
+
+Ports can also be added to the `devcontainer.json` file to permanently forward them:
+
+```
+"forwardPorts": [3000, 3001]
+```
+
 ## Using Claude Code
 
 To then use Claude Code in the devcontainer, you will need to install this inside the container:
