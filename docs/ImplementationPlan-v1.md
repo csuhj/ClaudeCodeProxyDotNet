@@ -88,6 +88,18 @@ Create `Middleware/ProxyMiddleware.cs` that acts as the terminal middleware for 
 - Manually test that a simple HTTP request forwarded through the proxy reaches the upstream and the response is returned correctly
 - Verify headers are passed through appropriately (including `x-api-key` / `Authorization`)
 
+### Task 2.6 — Unit Tests for ProxyMiddleware
+Create an NUnit test project `ClaudeCodeProxy.Tests` and write unit tests for `ProxyMiddleware` using `RichardSzalay.MockHttp` to mock the upstream `HttpClient`:
+- **Basic GET forwarding** — upstream status code and response body are returned to the client
+- **POST with body** — request body and `Content-Type` are forwarded to the upstream correctly
+- **Custom header forwarding** — headers such as `x-api-key` and `anthropic-version` are passed through
+- **Hop-by-hop header stripping (request)** — `Connection`, `Host`, etc. are not forwarded to the upstream
+- **Response header forwarding** — custom headers from the upstream response appear on the client response
+- **`Content-Length` stripping (response)** — `Content-Length` is excluded so Kestrel sets it from actual write size
+- **SSE streaming** — a `text/event-stream` response is forwarded in chunks and the full body reaches the client
+- **502 on upstream connection failure** — `HttpRequestException` from the upstream results in a 502 response
+- **504 on upstream timeout** — `TaskCanceledException` from the upstream results in a 504 response
+
 ---
 
 ## Phase 3: SQLite Database & Request Recording
