@@ -4,8 +4,56 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-ClaudeCodeProxyDotNet — a .NET proxy for Claude Code. This file will be expanded once the project is initialized.
+ClaudeCodeProxyDotNet — a .NET reverse proxy for Claude Code. It forwards all traffic to a configurable upstream URL (e.g. the Anthropic API), records every request and response to a SQLite database, and extracts LLM token usage from Anthropic Messages API calls.
 
-## Getting Started
+## Structure
 
-_Add build, run, and test commands here once the project structure is established._
+```
+ClaudeCodeProxy/          # Main ASP.NET Core Web API project (net10.0)
+  Controllers/            # API controllers (stats endpoints)
+  Data/                   # DbContext, EF Core migrations
+  Middleware/             # Proxy middleware, recording middleware
+  Models/                 # Entity models and DTOs
+  Services/               # Business logic (token parsing, stats queries)
+  wwwroot/                # Static files for the HTML dashboard
+ClaudeCodeProxy.Tests/    # NUnit test project (added in Phase 4)
+```
+
+## Commands
+
+### Build
+```bash
+dotnet build ClaudeCodeProxyDotNet.slnx
+```
+
+### Run
+```bash
+dotnet run --project ClaudeCodeProxy
+```
+
+Set the upstream URL before running (defaults to `https://api.anthropic.com` if not overridden):
+```bash
+ANTHROPIC_BASE_URL=https://api.anthropic.com dotnet run --project ClaudeCodeProxy
+```
+
+### Test
+```bash
+dotnet test
+```
+
+### EF Core Migrations
+```bash
+# Add a new migration
+dotnet ef migrations add <MigrationName> --project ClaudeCodeProxy
+
+# Apply migrations to create/update the database
+dotnet ef database update --project ClaudeCodeProxy
+```
+
+## Configuration
+
+The upstream base URL is read from (in priority order):
+1. `ANTHROPIC_BASE_URL` environment variable
+2. `Upstream:BaseUrl` in `appsettings.json`
+
+The SQLite database path is configured under `ConnectionStrings:DefaultConnection` in `appsettings.json`.

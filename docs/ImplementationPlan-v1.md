@@ -177,7 +177,7 @@ For streaming responses (`Content-Type: text/event-stream`):
 - Log a warning if token parsing fails for a path/method that was identified as an LLM call
 
 ### Task 4.5 — Unit Tests for Token Parsers
-- Create a test project `ClaudeCodeProxy.Tests`
+- Create an NUnit test project `ClaudeCodeProxy.Tests`
 - Write unit tests for `TokenUsageParser` using fixture JSON samples:
   - A non-streaming `messages` response with usage
   - A streaming SSE response with multiple events including a `message_delta` usage event
@@ -221,7 +221,7 @@ Create `Controllers/StatsController.cs` with:
 - Return `application/json`; include CORS headers if needed for the HTML UI
 
 ### Task 6.3 — Unit Tests for Stats Queries
-- Add tests to `ClaudeCodeProxy.Tests` for `StatsService`
+- Add NUnit tests to `ClaudeCodeProxy.Tests` for `StatsService`
 - Use an in-memory SQLite database (EF Core supports this) seeded with known data
 - Assert correct bucketing and aggregation
 
