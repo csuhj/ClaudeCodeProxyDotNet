@@ -11,7 +11,7 @@ This document breaks the Version 1 requirements into discrete, actionable tasks 
 ### Task 1.1 — Create the .NET Solution and Project
 - Create a new ASP.NET Core Web API project: `ClaudeCodeProxy`
 - Add a solution file (`ClaudeCodeProxyDotNet.sln`) at the repository root
-- Target .NET 8 (LTS) or .NET 9
+- Target .NET 10
 - Confirm the project builds and runs with the default template
 
 ### Task 1.2 — Add NuGet Dependencies
