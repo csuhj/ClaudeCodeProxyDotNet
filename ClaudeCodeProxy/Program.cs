@@ -1,5 +1,8 @@
+using ClaudeCodeProxy.Data;
 using ClaudeCodeProxy.Middleware;
 using ClaudeCodeProxy.Models;
+using ClaudeCodeProxy.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,15 @@ if (string.IsNullOrWhiteSpace(upstreamOptions.BaseUrl))
 
 builder.Services.AddSingleton(upstreamOptions);
 
+// ── Database ──────────────────────────────────────────────────────────────────
+builder.Services.AddDbContext<ProxyDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ── Recording service ─────────────────────────────────────────────────────────
+// Singleton so the middleware can receive it via constructor injection.
+// It uses IServiceScopeFactory internally to create short-lived DbContext scopes.
+builder.Services.AddSingleton<IRecordingService, RecordingService>();
+
 // ── HTTP Client ───────────────────────────────────────────────────────────────
 // A named client is used so the middleware can request it by name via
 // IHttpClientFactory. AutomaticDecompression is disabled so compressed
@@ -37,6 +49,13 @@ builder.Services.AddHttpClient("upstream", client =>
 
 // ── App pipeline ──────────────────────────────────────────────────────────────
 var app = builder.Build();
+
+// Apply any pending EF Core migrations automatically on startup.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ProxyDbContext>();
+    db.Database.Migrate();
+}
 
 // ProxyMiddleware is the terminal handler — every request is forwarded upstream.
 app.UseMiddleware<ProxyMiddleware>();

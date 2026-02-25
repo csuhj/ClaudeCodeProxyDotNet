@@ -2,8 +2,10 @@ using System.Net;
 using System.Text;
 using ClaudeCodeProxy.Middleware;
 using ClaudeCodeProxy.Models;
+using ClaudeCodeProxy.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using RichardSzalay.MockHttp;
 
 namespace ClaudeCodeProxy.Tests.Middleware;
@@ -15,12 +17,34 @@ public class ProxyMiddlewareTests
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Creates a middleware instance with a no-op mock recording service.
+    /// Tests that need to assert recording behaviour should call
+    /// <see cref="CreateMiddlewareWithRecordingMock"/> instead.
+    /// </summary>
     private static ProxyMiddleware CreateMiddleware(HttpClient httpClient)
+    {
+        var recordingMock = new Mock<IRecordingService>();
+        return CreateMiddlewareCore(httpClient, recordingMock.Object);
+    }
+
+    /// <summary>
+    /// Creates a middleware instance and returns the recording service mock
+    /// so tests can assert that <see cref="IRecordingService.Record"/> was called.
+    /// </summary>
+    private static (ProxyMiddleware Middleware, Mock<IRecordingService> RecordingMock)
+        CreateMiddlewareWithRecordingMock(HttpClient httpClient)
+    {
+        var recordingMock = new Mock<IRecordingService>();
+        return (CreateMiddlewareCore(httpClient, recordingMock.Object), recordingMock);
+    }
+
+    private static ProxyMiddleware CreateMiddlewareCore(HttpClient httpClient, IRecordingService recordingService)
     {
         var factory = new TestHttpClientFactory(httpClient);
         var logger = NullLogger<ProxyMiddleware>.Instance;
         var options = new UpstreamOptions { BaseUrl = UpstreamBaseUrl };
-        return new ProxyMiddleware(_ => Task.CompletedTask, factory, logger, options);
+        return new ProxyMiddleware(_ => Task.CompletedTask, factory, logger, options, recordingService);
     }
 
     private static DefaultHttpContext CreateContext(
@@ -269,6 +293,71 @@ public class ProxyMiddlewareTests
         await middleware.InvokeAsync(context);
 
         Assert.That(context.Response.StatusCode, Is.EqualTo(504));
+    }
+
+    // ── Recording tests ───────────────────────────────────────────────────────
+
+    [Test]
+    public async Task RecordingService_IsCalledAfterSuccessfulRequest()
+    {
+        const string responseBody = """{"id":"msg_1","type":"message"}""";
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Post, $"{UpstreamBaseUrl}/v1/messages")
+            .Respond(HttpStatusCode.OK, "application/json", responseBody);
+
+        var (middleware, recordingMock) = CreateMiddlewareWithRecordingMock(mockHttp.ToHttpClient());
+        var context = CreateContext("POST", "/v1/messages", body: """{"model":"claude-opus-4-6"}""",
+            headers: new Dictionary<string, string> { ["Content-Type"] = "application/json" });
+
+        await middleware.InvokeAsync(context);
+
+        recordingMock.Verify(
+            r => r.Record(It.Is<ProxyRequest>(req =>
+                req.Method == "POST" &&
+                req.Path == "/v1/messages" &&
+                req.ResponseStatusCode == 200 &&
+                req.ResponseBody == responseBody &&
+                req.DurationMs >= 0)),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task RecordingService_IsNotCalledOnUpstreamConnectionFailure()
+    {
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Get, $"{UpstreamBaseUrl}/v1/models")
+            .Throw(new HttpRequestException("Connection refused"));
+
+        var (middleware, recordingMock) = CreateMiddlewareWithRecordingMock(mockHttp.ToHttpClient());
+        var context = CreateContext();
+
+        await middleware.InvokeAsync(context);
+
+        recordingMock.Verify(r => r.Record(It.IsAny<ProxyRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task RecordingService_CapturesRequestBody()
+    {
+        const string requestBody = """{"model":"claude-opus-4-6","messages":[]}""";
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Post, $"{UpstreamBaseUrl}/v1/messages")
+            .Respond(HttpStatusCode.OK, "application/json", """{"id":"msg_1"}""");
+
+        var (middleware, recordingMock) = CreateMiddlewareWithRecordingMock(mockHttp.ToHttpClient());
+        var context = CreateContext("POST", "/v1/messages", body: requestBody,
+            headers: new Dictionary<string, string> { ["Content-Type"] = "application/json" });
+
+        await middleware.InvokeAsync(context);
+
+        recordingMock.Verify(
+            r => r.Record(It.Is<ProxyRequest>(req => req.RequestBody == requestBody)),
+            Times.Once);
     }
 
     // ── Test double ───────────────────────────────────────────────────────────

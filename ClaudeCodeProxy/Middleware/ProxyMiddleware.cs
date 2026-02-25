@@ -1,5 +1,8 @@
 using System.Diagnostics;
+using System.Text;
+using System.Text.Json;
 using ClaudeCodeProxy.Models;
+using ClaudeCodeProxy.Services;
 
 namespace ClaudeCodeProxy.Middleware;
 
@@ -28,22 +31,26 @@ public class ProxyMiddleware
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<ProxyMiddleware> _logger;
     private readonly string _upstreamBaseUrl;
+    private readonly IRecordingService _recordingService;
 
     public ProxyMiddleware(
         RequestDelegate _,
         IHttpClientFactory httpClientFactory,
         ILogger<ProxyMiddleware> logger,
-        UpstreamOptions options)
+        UpstreamOptions options,
+        IRecordingService recordingService)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _upstreamBaseUrl = options.BaseUrl.TrimEnd('/');
+        _recordingService = recordingService;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         var sw = Stopwatch.StartNew();
         var requestAborted = context.RequestAborted;
+        var timestamp = DateTime.UtcNow;
 
         // ── Step 1: Buffer the request body ──────────────────────────────────
         // Read the entire request body into a MemoryStream so it can be both
@@ -51,6 +58,10 @@ public class ProxyMiddleware
         using var requestBodyMs = new MemoryStream();
         await context.Request.Body.CopyToAsync(requestBodyMs, requestAborted);
         requestBodyMs.Position = 0;
+
+        // Capture request headers as JSON for recording.
+        var requestHeadersJson = SerializeHeaders(
+            context.Request.Headers.Select(h => KeyValuePair.Create(h.Key, h.Value.ToString())));
 
         // ── Step 2: Build the upstream request ───────────────────────────────
         var path = context.Request.Path.ToUriComponent();
@@ -128,6 +139,11 @@ public class ProxyMiddleware
                 context.Response.Headers[key] = value.ToArray();
             }
 
+            // Capture response headers as JSON for recording.
+            var responseHeadersJson = SerializeHeaders(
+                upstreamResponse.Headers.Concat(upstreamResponse.Content.Headers)
+                    .Select(h => KeyValuePair.Create(h.Key, string.Join(", ", h.Value))));
+
             // ── Step 5: Stream or buffer the response body ────────────────────
             var isStreaming = upstreamResponse.Content.Headers.ContentType?.MediaType
                 ?.Equals("text/event-stream", StringComparison.OrdinalIgnoreCase) ?? false;
@@ -168,14 +184,6 @@ public class ProxyMiddleware
 
             sw.Stop();
 
-            // ── Step 6: TODO (Phase 3) — hand off to RecordingService ─────────
-            // At this point the following are available for persistence:
-            //   requestBodyMs  — buffered request body
-            //   responseBodyMs — buffered response body (full or accumulated SSE)
-            //   upstreamResponse.StatusCode
-            //   sw.ElapsedMilliseconds
-            //   isStreaming
-
             _logger.LogInformation(
                 "{Method} {Path} -> {StatusCode} ({Ms}ms, {Mode})",
                 context.Request.Method,
@@ -183,6 +191,45 @@ public class ProxyMiddleware
                 (int)upstreamResponse.StatusCode,
                 sw.ElapsedMilliseconds,
                 isStreaming ? "streaming" : "buffered");
+
+            // ── Step 6: Hand off to RecordingService ──────────────────────────
+            // Build the record from all captured data, then fire-and-forget.
+            requestBodyMs.Position = 0;
+            var requestBodyText = requestBodyMs.Length > 0
+                ? await ReadAsStringAsync(requestBodyMs)
+                : null;
+
+            responseBodyMs.Position = 0;
+            var responseBodyText = responseBodyMs.Length > 0
+                ? await ReadAsStringAsync(responseBodyMs)
+                : null;
+
+            var record = new ProxyRequest
+            {
+                Timestamp = timestamp,
+                Method = context.Request.Method,
+                Path = path + query,
+                RequestHeaders = requestHeadersJson,
+                RequestBody = requestBodyText,
+                ResponseStatusCode = (int)upstreamResponse.StatusCode,
+                ResponseHeaders = responseHeadersJson,
+                ResponseBody = responseBodyText,
+                DurationMs = sw.ElapsedMilliseconds
+            };
+
+            _recordingService.Record(record);
         }
+    }
+
+    private static string SerializeHeaders(IEnumerable<KeyValuePair<string, string>> headers)
+    {
+        var dict = headers.ToDictionary(h => h.Key, h => h.Value);
+        return JsonSerializer.Serialize(dict);
+    }
+
+    private static async Task<string> ReadAsStringAsync(MemoryStream ms)
+    {
+        using var reader = new StreamReader(ms, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
+        return await reader.ReadToEndAsync();
     }
 }
