@@ -16,7 +16,7 @@ I haven't hand-edited any of the code or project files, etc.  The only changes I
 There is an "InitialRequirements.md" file in the docs directory.  Can you examine the "Initial Requirements for Version 1" section and plan out a detailed set of tasks to complete to meet these objectives.  Can you then write these tasks out into the file "ImplementationPlan-v1.md" in the docs directory
 ```
 
-Claude then created the [ImplementationPlan-v1.md](./ImplementationPlan-v1.md) document.  This was checked and seemed reasonable, although Claude had originally suggested implementing the project with .Net 8 or .Net 9.  I didn't change this by hand, but instead asked Claude to do it.
+Claude then created the [ImplementationPlan-v1.md](./plans/ImplementationPlan-v1.md) document.  This was checked and seemed reasonable, although Claude had originally suggested implementing the project with .Net 8 or .Net 9.  I didn't change this by hand, but instead asked Claude to do it.
 
 ```
 Can you update the plan in phase 1 to use .Net 10
@@ -46,19 +46,19 @@ It did so, but didn't have to change any code as it hadn't written any tests yet
 Can you write down all of the steps you have followed so far into the file docs/Phase1Steps.md
 ```
 
-It created the [Phase1Steps.md](./Phase1Steps.md) file - documenting the steps it had taken so far, based on the conversation history.
+It created the [Phase1Steps.md](./plans/Phase1Steps.md) file - documenting the steps it had taken so far, based on the conversation history.
 
 ```
 Can you now implement phase 2 of the plan.  Again, don't move on to any further phases at the moment - just phase 2 and then stop.  Once you have completed phase 2 can you write down a file in the docs dir called Phase2Steps.md with all of the steps you have followed to implement phase 2.
 ```
 
-It created the reverse proxy middleware and wired it into the project, and wrote [Phase2Steps.md](./Phase2Steps.md).
+It created the reverse proxy middleware and wired it into the project, and wrote [Phase2Steps.md](./plans/Phase2Steps.md).
 
 ```
 Can you add a step to the end of phase 2 of the plan to add unit testing to the ProxyMiddleware to check that it correctly forwards on requests and handles the responses.  The RichardSzalay.MockHttp library might be useful for this, but if you think there is a better alternative then fine.  Then once you have completed this extra work can you write down a file in the docs dir called Phase2ExtraSteps.md with all of the steps you have followed to implement this.
 ```
 
-It created the tests using the suggested library and wrote [Phase2ExtraSteps.md](./Phase2ExtraSteps.md).
+It created the tests using the suggested library and wrote [Phase2ExtraSteps.md](./plans/Phase2ExtraSteps.md).
 
 Claude's context was getting full (to 78%) so I created a new conversation and continued with the following.
 
@@ -72,4 +72,4 @@ At one point during it's implementation Claude was suggesting injecting a real v
 Can you think about this again please - I think you should use the Moq library and add a Mock version of the recording service here.  Then the mock can be asserted that it was called without needing to be a real service making real changes to a database. 
 ```
 
-It created the database recording mechanism and wired it into the reverse proxy middleware, fixed  the tests and added some new ones and wrote [Phase3Steps.md](./Phase3Steps.md).
+It created the database recording mechanism and wired it into the reverse proxy middleware, fixed  the tests and added some new ones and wrote [Phase3Steps.md](./plans/Phase3Steps.md).
