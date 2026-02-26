@@ -73,3 +73,41 @@ Can you think about this again please - I think you should use the Moq library a
 ```
 
 It created the database recording mechanism and wired it into the reverse proxy middleware, fixed  the tests and added some new ones and wrote [Phase3Steps.md](./plans/Phase3Steps.md).
+
+I then manually performed a code review and raised some points to address in [CodeReviewsAfterPhase3.md](./plans/CodeReviewsAfterPhase3.md).
+
+```
+You are running through the implementation plan in docs/ImplementationPlan-v1.md.  You've already completed Phase 1, Phase 2 and phase 3.  There has now been a code review after Phase 3 and the code review comments have been made in /docs/CodeReviewsAfterPhase3.md.  Can you action the next review comment that hasn't already been addressed (i.e. without a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
+```
+
+It addressed the first point (breaks up middleware into smaller methods)
+
+```
+Can you action the next review comment that hasn't already been addressed (i.e. without a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
+```
+
+It addressed the second point (implement repository pattern).  I then ran exactly the same prompt 2 more times to address the third (add tests to the recording service) and fourth points (moved the docs).  I decided it should also move one more document so said:
+
+```
+Can you also move the code review doc your working on into the plans directory too
+```
+
+And it did so.  I then continued with the same "Action the code review" prompt and it did the fifth point (move code into src and dest folders).  Claude's context was getting full again (to 62%) so I created a new conversation and continued with the following to address the final code review point (create end to end tests)
+
+```
+You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already completed Phase 1, Phase 2 and phase 3.  There has now been a code review after Phase 3 and the code review comments have been made in /docs/CodeReviewsAfterPhase3.md.  Can you action the next review comment that hasn't already been addressed (i.e. without a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
+```
+
+It seemed to get a bit stuck with the tests failing.  Perhaps I got a bit impatient, but I interrupted the agent and said:
+
+```
+I've interrupted you to try and help - it looks like the tests aren't passing.  I think you need to update the upstreamOptions service inside builder.ConfigureTestServices() to be bound to the new configuration which has the dummy Upstream:BaseUrl set up.  Give that a try
+```
+
+After a while it sorted it out and the tests passed.
+
+```
+Can you write down all of the steps you have followed so far and append them to the existing file docs/plans/Phase3PostCodeReviewSteps.md
+```
+
+The document was updated - the code review has been completed.
