@@ -6,7 +6,14 @@
 	"image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble",
 	"features": {
 		"ghcr.io/nikiforovall/devcontainer-features/dotnet-csharpier:1": {}
-	}
+	},
+
+	"remoteEnv": {
+    	"ASPNETCORE_Kestrel__Certificates__Default__Password": "LocalDevCertPassword",
+    	"ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx"
+	},
+
+	"mounts": [ "source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind" ]
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

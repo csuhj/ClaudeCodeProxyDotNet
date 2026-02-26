@@ -24,13 +24,46 @@ To create a new devcontainer for an already existing project.  This example will
 
 ## Temporarily opening ports for testing
 
-If you want to run an application that accepts incomming network connections then ports can be forwarded from the devcontainer to the host by using the "Forward a Port" command in the VS Code command palette.
+If you want to run an application that accepts incomming network connections then ports can be forwarded from the devcontainer to the host by using the "Forward a Port" command in the VS Code command palette.  VS Code also looks like it detects some of this stuff and so will automatically map ports (to the same port number on the host machine)
 
 Ports can also be added to the `devcontainer.json` file to permanently forward them:
 
 ```
 "forwardPorts": [3000, 3001]
 ```
+
+## Allowing access to HTTPS dev-certs when developing .Net applications
+
+If your application uses .Net developer self-signed certificates for HTTPS TLS support then this will need making available to the devcontainer.  To do this follow these steps:
+
+On your host machine run this commands:
+```
+dotnet dev-certs https --trust
+mkdir -p "${HOME}/.aspnet/https"
+dotnet dev-certs https --export-path "${HOME}/.aspnet/https/aspnetapp.pfx" --password "LocalDevCertPassword"
+```
+Note:
+- If your host machine is a Windows machine, but you're running these commands in git-bash then you might want to explicitly expand the HOME environment variable to something more appropriate
+- Change `LocalDevCertPassword` to a secure password when in use.
+
+This exports the certificate from the main certificate store in the host machine, for use in the container.
+
+Then add the following settings to `devcontainer.json`:
+
+```
+"remoteEnv": {
+    "ASPNETCORE_Kestrel__Certificates__Default__Password": "LocalDevCertPassword",
+    "ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx",
+},
+"mounts": [ "source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind" ]
+```
+
+Note:
+- The password in the first environment variable must match the password when the certificate was exported.
+- The path in the second environment variable should not be changed - this points to the path inside the devcontainer
+- The path on the left-hand side of the "mounts" setting should then point to the path of the directory that the certificate was exported into.
+
+You can check that the mount binding has worked correctly by inspecting the "Bind mounts" in Docker Desktop. 
 
 ## Using Claude Code
 
