@@ -1,0 +1,67 @@
+# Prompts used to create this application
+
+This application was built using Claude Code (version 2.1.59 with the Sonnet 4.6 model) just from the [InitialRequirements.md](./InitialRequirements.md) file and the following prompts.  Note that Claude was left to request permission for each action, and on a couple of occasions it's suggested action was interrupted to provide a better alternative.
+
+This information is probably not useful for an AI coding agent to continue with the development of the application.  But it might be interesting for humans to see how the development has progressed.
+
+```
+There is an "InitialRequirements.md" file in the docs directory.  Can you examine the "Initial Requirements for Version 1" section and plan out a detailed set of tasks to complete to meet these objectives.  Can you then write these tasks out into the file "ImplementationPlan-v1.md" in the docs directory
+```
+
+Claude then created the [ImplementationPlan-v1.md](./ImplementationPlan-v1.md) document.  This was checked and seemed reasonable, although Claude had originally suggested implementing the project with .Net 8 or .Net 9.  It wasn't hand edited.
+
+```
+Can you update the plan in phase 1 to use .Net 10
+```
+
+Claude then made the appropriate change to the plan.
+
+```
+ok thanks - can you now implement phase 1 of the plan.  Don't move on to any further phases at the moment - just phase 1 and then stop
+```
+
+At one point during it's implementation Claude was searching for a `.sln` file, but it had previously created the solution file as a `.slnx` file, so I interjected:
+
+```
+you are searching for a .sln file - but you should be searching for a .slnx file - try that
+```
+
+It then found the file and continued until it had completed phase 1.
+
+```
+Can you adjust the implementationplan-v1 doc and the Claude.md file to say that when unit tests will be added, they will be done using nunit
+```
+
+It did so, but didn't have to change any code as it hadn't written any tests yet.
+
+```
+Can you write down all of the steps you have followed so far into the file docs/Phase1Steps.md
+```
+
+It created the [Phase1Steps.md](./Phase1Steps.md) file - documenting the steps it had taken so far, based on the conversation history.
+
+```
+Can you now implement phase 2 of the plan.  Again, don't move on to any further phases at the moment - just phase 2 and then stop.  Once you have completed phase 2 can you write down a file in the docs dir called Phase2Steps.md with all of the steps you have followed to implement phase 2.
+```
+
+It created the reverse proxy middleware and wired it into the project, and wrote [Phase2Steps.md](./Phase2Steps.md).
+
+```
+Can you add a step to the end of phase 2 of the plan to add unit testing to the ProxyMiddleware to check that it correctly forwards on requests and handles the responses.  The RichardSzalay.MockHttp library might be useful for this, but if you think there is a better alternative then fine.  Then once you have completed this extra work can you write down a file in the docs dir called Phase2ExtraSteps.md with all of the steps you have followed to implement this.
+```
+
+It created the tests using the suggested library and wrote [Phase2ExtraSteps.md](./Phase2ExtraSteps.md).
+
+Claude's context was getting full (to 78%) so I created a new conversation and continued with the following.
+
+```
+You are running through the implementation plan in docs/ImplementationPlan-v1.md.  You've already completed Phase 1 and Phase 2.  Can you now implement phase 3 of the plan.  Don't move on to any further phases at the moment - just phase 3 and then stop.  Once you have completed phase 3 can you write down a file in the docs dir called Phase3Steps.md with all of the steps you have followed to implement phase 3.
+```
+
+At one point during it's implementation Claude was suggesting injecting a real version of the RecordingService to the middleware to get the existing tests to pass.  I stopped it and made a different suggestion:
+
+```
+Can you think about this again please - I think you should use the Moq library and add a Mock version of the recording service here.  Then the mock can be asserted that it was called without needing to be a real service making real changes to a database. 
+```
+
+It created the database recording mechanism and wired it into the reverse proxy middleware, fixed  the tests and added some new ones and wrote [Phase3Steps.md](./Phase3Steps.md).
