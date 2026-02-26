@@ -7,20 +7,13 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Configuration ─────────────────────────────────────────────────────────────
-// Allow ANTHROPIC_BASE_URL environment variable to override Upstream:BaseUrl.
-// This matches the env var name that Claude Code itself uses.
-var anthropicBaseUrl = Environment.GetEnvironmentVariable("ANTHROPIC_BASE_URL");
-if (!string.IsNullOrWhiteSpace(anthropicBaseUrl))
-    builder.Configuration["Upstream:BaseUrl"] = anthropicBaseUrl;
-
 // Bind and validate upstream options — fail fast if not configured.
 var upstreamOptions = new UpstreamOptions();
 builder.Configuration.GetSection(UpstreamOptions.SectionName).Bind(upstreamOptions);
 
 if (string.IsNullOrWhiteSpace(upstreamOptions.BaseUrl))
     throw new InvalidOperationException(
-        "Upstream base URL is not configured. " +
-        "Set 'Upstream:BaseUrl' in appsettings.json or the ANTHROPIC_BASE_URL environment variable.");
+        "Upstream base URL is not configured. Set 'Upstream:BaseUrl' in appsettings.json.");
 
 builder.Services.AddSingleton(upstreamOptions);
 

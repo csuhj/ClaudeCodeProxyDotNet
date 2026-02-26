@@ -49,8 +49,6 @@ dotnet ef database update --project src/ClaudeCodeProxy
 
 ## Configuration
 
-The upstream base URL is read from (in priority order):
-1. `ANTHROPIC_BASE_URL` environment variable
-2. `Upstream:BaseUrl` in `appsettings.json`
+The upstream base URL is configured via `Upstream:BaseUrl` in `appsettings.json`.
 
 The SQLite database path is configured under `ConnectionStrings:DefaultConnection` in `appsettings.json`.
