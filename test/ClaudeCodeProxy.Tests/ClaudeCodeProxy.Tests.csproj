@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClaudeCodeProxy\ClaudeCodeProxy.csproj" />
+    <ProjectReference Include="..\..\src\ClaudeCodeProxy\ClaudeCodeProxy.csproj" />
   </ItemGroup>
 
 </Project>

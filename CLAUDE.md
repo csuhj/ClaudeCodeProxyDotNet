@@ -9,14 +9,16 @@ ClaudeCodeProxyDotNet — a .NET reverse proxy for Claude Code. It forwards all 
 ## Structure
 
 ```
-ClaudeCodeProxy/          # Main ASP.NET Core Web API project (net10.0)
-  Controllers/            # API controllers (stats endpoints)
-  Data/                   # DbContext, EF Core migrations
-  Middleware/             # Proxy middleware, recording middleware
-  Models/                 # Entity models and DTOs
-  Services/               # Business logic (token parsing, stats queries)
-  wwwroot/                # Static files for the HTML dashboard
-ClaudeCodeProxy.Tests/    # NUnit test project (added in Phase 4)
+src/
+  ClaudeCodeProxy/          # Main ASP.NET Core Web API project (net10.0)
+    Controllers/            # API controllers (stats endpoints)
+    Data/                   # DbContext, EF Core migrations
+    Middleware/             # Proxy middleware, recording middleware
+    Models/                 # Entity models and DTOs
+    Services/               # Business logic (token parsing, stats queries)
+    wwwroot/                # Static files for the HTML dashboard
+test/
+  ClaudeCodeProxy.Tests/    # NUnit test project
 ```
 
 ## Commands
@@ -28,12 +30,7 @@ dotnet build ClaudeCodeProxyDotNet.slnx
 
 ### Run
 ```bash
-dotnet run --project ClaudeCodeProxy
-```
-
-Set the upstream URL before running (defaults to `https://api.anthropic.com` if not overridden):
-```bash
-ANTHROPIC_BASE_URL=https://api.anthropic.com dotnet run --project ClaudeCodeProxy
+dotnet run --project src/ClaudeCodeProxy
 ```
 
 ### Test
@@ -44,10 +41,10 @@ dotnet test
 ### EF Core Migrations
 ```bash
 # Add a new migration
-dotnet ef migrations add <MigrationName> --project ClaudeCodeProxy
+dotnet ef migrations add <MigrationName> --project src/ClaudeCodeProxy
 
 # Apply migrations to create/update the database
-dotnet ef database update --project ClaudeCodeProxy
+dotnet ef database update --project src/ClaudeCodeProxy
 ```
 
 ## Configuration

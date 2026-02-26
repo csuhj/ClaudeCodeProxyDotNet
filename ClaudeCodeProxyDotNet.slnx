@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="ClaudeCodeProxy.Tests/ClaudeCodeProxy.Tests.csproj" />
-  <Project Path="ClaudeCodeProxy/ClaudeCodeProxy.csproj" />
+  <Project Path="src/ClaudeCodeProxy/ClaudeCodeProxy.csproj" />
+  <Project Path="test/ClaudeCodeProxy.Tests/ClaudeCodeProxy.Tests.csproj" />
 </Solution>
