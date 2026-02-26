@@ -28,3 +28,12 @@ Note: If your host machine is a Windows machine, but you're running these comman
 ```
 export NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
+
+## Appendix.  Test file to check networking in Node.JS
+
+If you are having problems setting up the HTTPS dev certificate correctly, along with the node environment variables then you test this in a node environment with the example [test-cert.js](./test-cert.js)
+
+To run this use the command:
+```
+node test-cert.js
+```
