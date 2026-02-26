@@ -58,3 +58,7 @@ using (var scope = app.Services.CreateScope())
 app.UseMiddleware<ProxyMiddleware>();
 
 app.Run();
+
+// Make the implicit Program class public so WebApplicationFactory<Program> can reference it
+// from the test project.
+public partial class Program { }
