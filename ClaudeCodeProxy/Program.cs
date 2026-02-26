@@ -28,9 +28,13 @@ builder.Services.AddSingleton(upstreamOptions);
 builder.Services.AddDbContext<ProxyDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ── Recording service ─────────────────────────────────────────────────────────
-// Singleton so the middleware can receive it via constructor injection.
-// It uses IServiceScopeFactory internally to create short-lived DbContext scopes.
+// ── Recording repository & service ────────────────────────────────────────────
+// Repository is scoped (one per request scope) to match ProxyDbContext's lifetime.
+builder.Services.AddScoped<IRecordingRepository, RecordingRepository>();
+
+// RecordingService is singleton so the middleware can receive it via constructor
+// injection. It uses IServiceScopeFactory internally to create short-lived scopes
+// that resolve the scoped IRecordingRepository for each background write.
 builder.Services.AddSingleton<IRecordingService, RecordingService>();
 
 // ── HTTP Client ───────────────────────────────────────────────────────────────

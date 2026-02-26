@@ -23,24 +23,26 @@ public class RecordingService : IRecordingService
     /// Enqueues a <see cref="ProxyRequest"/> record for background persistence.
     /// Returns immediately; database write failures are logged but never rethrown.
     /// </summary>
-    public void Record(ProxyRequest request)
+    public void Record(ProxyRequest request) => _ = Task.Run(() => RecordCoreAsync(request));
+
+    /// <summary>
+    /// Performs the actual persistence. Exposed as <c>internal</c> so tests can
+    /// await it directly without racing against a background <see cref="Task.Run"/>.
+    /// </summary>
+    internal async Task RecordCoreAsync(ProxyRequest request)
     {
-        _ = Task.Run(async () =>
+        try
         {
-            try
-            {
-                // DbContext is scoped — create a new scope for each background write.
-                using var scope = _scopeFactory.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<ProxyDbContext>();
-                db.ProxyRequests.Add(request);
-                await db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex,
-                    "Failed to record proxy request {Method} {Path} — recording will be skipped.",
-                    request.Method, request.Path);
-            }
-        });
+            // Repository is scoped — create a new scope for each background write.
+            using var scope = _scopeFactory.CreateScope();
+            var repository = scope.ServiceProvider.GetRequiredService<IRecordingRepository>();
+            await repository.AddAsync(request);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Failed to record proxy request {Method} {Path} — recording will be skipped.",
+                request.Method, request.Path);
+        }
     }
 }
