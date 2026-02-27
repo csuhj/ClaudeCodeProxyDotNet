@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace ClaudeCodeProxy.Tests;
+namespace ClaudeCodeProxy.Tests.Services;
 
 /// <summary>
 /// Tests for <see cref="RecordingService"/> using a real in-memory SQLite database.
