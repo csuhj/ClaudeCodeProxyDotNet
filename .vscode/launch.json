@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/ClaudeCodeProxy/bin/Debug/net10.0/ClaudeCodeProxy.dll",
+            "program": "${workspaceFolder}/src/ClaudeCodeProxy/bin/Debug/net10.0/ClaudeCodeProxy.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/ClaudeCodeProxy",
+            "cwd": "${workspaceFolder}/src/ClaudeCodeProxy",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
@@ -21,7 +21,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+                "/Views": "${workspaceFolder}/src/ClaudeCodeProxy/Views"
             }
         },
         {
