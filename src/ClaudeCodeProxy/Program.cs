@@ -30,6 +30,10 @@ builder.Services.AddScoped<IRecordingRepository, RecordingRepository>();
 // that resolve the scoped IRecordingRepository for each background write.
 builder.Services.AddSingleton<IRecordingService, RecordingService>();
 
+// ── Stats service & controllers ───────────────────────────────────────────────
+builder.Services.AddScoped<IStatsService, StatsService>();
+builder.Services.AddControllers();
+
 // ── HTTP Client ───────────────────────────────────────────────────────────────
 // A named client is used so the middleware can request it by name via
 // IHttpClientFactory. AutomaticDecompression is disabled so compressed
@@ -54,7 +58,12 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-// ProxyMiddleware is the terminal handler — every request is forwarded upstream.
+// Map API controllers before the proxy so that /api/stats/* is handled locally.
+// ProxyMiddleware checks context.GetEndpoint() and delegates to _next when a
+// controller route is matched, so no requests are accidentally proxied upstream.
+app.MapControllers();
+
+// ProxyMiddleware is the terminal handler for all requests not matched by a controller.
 app.UseMiddleware<ProxyMiddleware>();
 
 app.Run();

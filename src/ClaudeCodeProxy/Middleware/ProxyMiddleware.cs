@@ -29,6 +29,7 @@ public class ProxyMiddleware
         "Content-Length"
     };
 
+    private readonly RequestDelegate _next;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<ProxyMiddleware> _logger;
     private readonly string _upstreamBaseUrl;
@@ -36,12 +37,13 @@ public class ProxyMiddleware
     private readonly int _maxStoredBodyBytes;
 
     public ProxyMiddleware(
-        RequestDelegate _,
+        RequestDelegate next,
         IHttpClientFactory httpClientFactory,
         ILogger<ProxyMiddleware> logger,
         UpstreamOptions options,
         IRecordingService recordingService)
     {
+        _next = next;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _upstreamBaseUrl = options.BaseUrl.TrimEnd('/');
@@ -51,6 +53,14 @@ public class ProxyMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        // If endpoint routing has matched a controller action (e.g. /api/stats/*),
+        // delegate to the next middleware so the endpoint can execute normally.
+        if (context.GetEndpoint() != null)
+        {
+            await _next(context);
+            return;
+        }
+
         var sw = Stopwatch.StartNew();
         var requestAborted = context.RequestAborted;
         var timestamp = DateTime.UtcNow;
