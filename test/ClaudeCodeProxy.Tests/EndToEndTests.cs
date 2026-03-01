@@ -126,7 +126,8 @@ public class EndToEndTests
                     {
                         ["Upstream:BaseUrl"] = "http://mock-upstream",
                         ["ConnectionStrings:DefaultConnection"] =
-                            $"Data Source={dbName};Mode=Memory;Cache=Shared"
+                            $"Data Source={dbName};Mode=Memory;Cache=Shared",
+                        ["Logging:LogLevel:Default"] = "None"
                     }));
 
                 builder.ConfigureTestServices(services =>
