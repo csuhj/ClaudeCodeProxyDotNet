@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using ClaudeCodeProxy.Models;
@@ -254,7 +255,7 @@ public class ProxyMiddleware
 
         responseBodyMs.Position = 0;
         var responseBodyText = responseBodyMs.Length > 0
-            ? await ReadAsStringAsync(responseBodyMs)
+            ? await DecodeResponseBodyAsync(responseBodyMs, upstreamResponse.Content.Headers.ContentEncoding)
             : null;
 
         var record = new ProxyRequest
@@ -277,6 +278,24 @@ public class ProxyMiddleware
     {
         var dict = headers.ToDictionary(h => h.Key, h => h.Value);
         return JsonSerializer.Serialize(dict);
+    }
+
+    // Decodes a captured response body to a UTF-8 string, decompressing if the
+    // upstream used gzip encoding.  The client already received the raw (possibly
+    // compressed) bytes; this is only for the recording service / token parser.
+    private static async Task<string> DecodeResponseBodyAsync(
+        MemoryStream ms, ICollection<string> contentEncodings)
+    {
+        if (contentEncodings.Contains("gzip", StringComparer.OrdinalIgnoreCase))
+        {
+            await using var gzip = new GZipStream(ms, CompressionMode.Decompress, leaveOpen: true);
+            using var decompressed = new MemoryStream();
+            await gzip.CopyToAsync(decompressed);
+            decompressed.Position = 0;
+            return await ReadAsStringAsync(decompressed);
+        }
+
+        return await ReadAsStringAsync(ms);
     }
 
     private static async Task<string> ReadAsStringAsync(MemoryStream ms)

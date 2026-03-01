@@ -1,4 +1,6 @@
+using System.IO.Compression;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using ClaudeCodeProxy.Middleware;
 using ClaudeCodeProxy.Models;
@@ -358,6 +360,78 @@ public class ProxyMiddlewareTests
         recordingMock.Verify(
             r => r.Record(It.Is<ProxyRequest>(req => req.RequestBody == requestBody)),
             Times.Once);
+    }
+
+    // ── Gzip tests ────────────────────────────────────────────────────────────
+
+    [Test]
+    public async Task GzippedResponse_ForwardsCompressedBytesToClient()
+    {
+        // The compressed bytes should reach the client unchanged so the client
+        // can decompress them using the Content-Encoding: gzip header it receives.
+        const string originalBody = """{"id":"msg_1","type":"message"}""";
+        var compressedBytes = GzipCompress(originalBody);
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Post, $"{UpstreamBaseUrl}/v1/messages")
+            .Respond(_ =>
+            {
+                var content = new ByteArrayContent(compressedBytes);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentEncoding.Add("gzip");
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+            });
+
+        var middleware = CreateMiddleware(mockHttp.ToHttpClient());
+        var context = CreateContext("POST", "/v1/messages");
+
+        await middleware.InvokeAsync(context);
+
+        context.Response.Body.Position = 0;
+        var rawBytes = ((MemoryStream)context.Response.Body).ToArray();
+        Assert.That(rawBytes, Is.EqualTo(compressedBytes));
+        Assert.That(context.Response.Headers["Content-Encoding"].ToString(), Is.EqualTo("gzip"));
+    }
+
+    [Test]
+    public async Task GzippedResponse_RecordingService_ReceivesDecompressedBody()
+    {
+        // Even though the client receives compressed bytes, the recording service
+        // should receive the human-readable decompressed text so token parsing works.
+        const string originalBody = """{"id":"msg_1","type":"message"}""";
+        var compressedBytes = GzipCompress(originalBody);
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Post, $"{UpstreamBaseUrl}/v1/messages")
+            .Respond(_ =>
+            {
+                var content = new ByteArrayContent(compressedBytes);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentEncoding.Add("gzip");
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+            });
+
+        var (middleware, recordingMock) = CreateMiddlewareWithRecordingMock(mockHttp.ToHttpClient());
+        var context = CreateContext("POST", "/v1/messages");
+
+        await middleware.InvokeAsync(context);
+
+        recordingMock.Verify(
+            r => r.Record(It.Is<ProxyRequest>(req => req.ResponseBody == originalBody)),
+            Times.Once);
+    }
+
+    private static byte[] GzipCompress(string text)
+    {
+        using var ms = new MemoryStream();
+        using (var gz = new GZipStream(ms, CompressionLevel.Fastest, leaveOpen: true))
+        {
+            var bytes = Encoding.UTF8.GetBytes(text);
+            gz.Write(bytes);
+        }
+        return ms.ToArray();
     }
 
     // ── Test double ───────────────────────────────────────────────────────────
