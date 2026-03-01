@@ -209,6 +209,8 @@ followed to fix the issue above.
 
 ### Phase 5
 
+I started a new context:
+
 ```
 You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already completed
 Phases 1, 2, 3 and 4.  Can you adjust the implementation plan and remove step 5.3, as previously in the code
@@ -231,3 +233,23 @@ Can you also add a new End to End test to cover resposnes having a gzip content 
 ```
 Can you write up the last 2 steps into a Phase5ExtraSteps.md file
 ```
+
+### Phase 6
+
+I started a new context:
+
+```
+You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already
+completed Phases 1 to 5.  Can you continue with phase 6 and don't move on to any further phases at the
+moment - just phase 6 and then stop.  Once you have completed phase 6 can you write down a file in the
+docs/plans dir called Phase6Steps.md with all of the steps you have followed to implement phase 6.
+```
+
+It did all of this, but hadn't been using the repository pattern:
+
+```
+Can you adjust the stats service to use the RecordingRepository rather than the ProxyDbContext directly.
+Then you can add what you had to do to a new Phase5ExtraSteps doc
+```
+
+It then completed this work.
