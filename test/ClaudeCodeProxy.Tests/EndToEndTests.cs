@@ -1,4 +1,7 @@
+using System.IO.Compression;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using ClaudeCodeProxy.Data;
 using ClaudeCodeProxy.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -101,6 +104,59 @@ public class EndToEndTests
         }
     }
 
+    [Test]
+    public async Task GzippedResponse_ForwardsCompressedBytesToClientWithContentEncodingHeader()
+    {
+        const string originalBody = """{"type":"message","content":"Hello"}""";
+        var compressedBytes = GzipCompress(originalBody);
+
+        _mockHttp.When("http://mock-upstream/v1/messages")
+            .Respond(_ =>
+            {
+                var content = new ByteArrayContent(compressedBytes);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentEncoding.Add("gzip");
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+            });
+
+        var response = await _client.GetAsync("/v1/messages");
+        var receivedBytes = await response.Content.ReadAsByteArrayAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((int)response.StatusCode, Is.EqualTo(200));
+            Assert.That(response.Content.Headers.ContentEncoding, Does.Contain("gzip"));
+            Assert.That(receivedBytes, Is.EqualTo(compressedBytes));
+        });
+    }
+
+    [Test]
+    public async Task GzippedResponse_RecordsDecompressedBodyInDatabase()
+    {
+        const string originalBody = """{"type":"message","content":"Hello"}""";
+        var compressedBytes = GzipCompress(originalBody);
+
+        _mockHttp.When("http://mock-upstream/v1/messages")
+            .Respond(_ =>
+            {
+                var content = new ByteArrayContent(compressedBytes);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentEncoding.Add("gzip");
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+            });
+
+        await _client.GetAsync("/v1/messages");
+
+        // Recording is fire-and-forget — allow a moment for the background task to complete.
+        await Task.Delay(200);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ProxyDbContext>();
+        var record = await db.ProxyRequests.SingleAsync();
+
+        Assert.That(record.ResponseBody, Is.EqualTo(originalBody));
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -157,6 +213,14 @@ public class EndToEndTests
         });
 
         return (factory, client, keepAlive);
+    }
+
+    private static byte[] GzipCompress(string text)
+    {
+        using var ms = new MemoryStream();
+        using (var gz = new GZipStream(ms, CompressionLevel.Fastest, leaveOpen: true))
+            gz.Write(Encoding.UTF8.GetBytes(text));
+        return ms.ToArray();
     }
 
     /// <summary>
