@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/angular';
 import { of } from 'rxjs';
 import { App } from './app';
-import { StatsService } from './stats.service';
+import { StatsService } from './services/stats.service';
 
 // Both HourlyStats and DailyStats (imported by App) call StatsService on init.
 const mockStatsService = {
