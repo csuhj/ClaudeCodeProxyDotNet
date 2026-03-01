@@ -211,10 +211,6 @@ For streaming responses (`Content-Type: text/event-stream`):
 - Handle upstream timeouts: return `504 Gateway Timeout`
 - Handle very large request/response bodies: cap the stored body size at a configurable limit (e.g. 1 MB) and store a truncation note rather than the full body
 
-### Task 5.3 — Environment Variable Support
-- Ensure `ANTHROPIC_BASE_URL` environment variable, when set, overrides `Upstream:BaseUrl` in `appsettings.json`
-- Document this in `CLAUDE.md`
-
 ---
 
 ## Phase 6 (Stretch): Analytics API Endpoint

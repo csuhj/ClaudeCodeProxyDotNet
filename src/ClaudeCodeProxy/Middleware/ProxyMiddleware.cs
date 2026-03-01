@@ -33,6 +33,7 @@ public class ProxyMiddleware
     private readonly ILogger<ProxyMiddleware> _logger;
     private readonly string _upstreamBaseUrl;
     private readonly IRecordingService _recordingService;
+    private readonly int _maxStoredBodyBytes;
 
     public ProxyMiddleware(
         RequestDelegate _,
@@ -45,6 +46,7 @@ public class ProxyMiddleware
         _logger = logger;
         _upstreamBaseUrl = options.BaseUrl.TrimEnd('/');
         _recordingService = recordingService;
+        _maxStoredBodyBytes = options.MaxStoredBodyBytes;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -53,6 +55,17 @@ public class ProxyMiddleware
         var requestAborted = context.RequestAborted;
         var timestamp = DateTime.UtcNow;
         var pathAndQuery = context.Request.Path.ToUriComponent() + context.Request.QueryString.ToUriComponent();
+
+        // Add a logging scope so that all log statements within this request
+        // automatically carry Method and Path as structured fields.
+        using var logScope = _logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["RequestMethod"] = context.Request.Method,
+                ["RequestPath"] = pathAndQuery
+            });
+
+        _logger.LogDebug("Request received: {Method} {Path}", context.Request.Method, pathAndQuery);
 
         // ── Step 1: Buffer the request body ──────────────────────────────────
         using var requestBodyMs = new MemoryStream();
@@ -82,7 +95,7 @@ public class ProxyMiddleware
             _logger.LogInformation(
                 "{Method} {Path} -> {StatusCode} ({Ms}ms, {Mode})",
                 context.Request.Method,
-                context.Request.Path.Value,
+                pathAndQuery,
                 (int)upstreamResponse.StatusCode,
                 sw.ElapsedMilliseconds,
                 isStreaming ? "streaming" : "buffered");
@@ -240,8 +253,8 @@ public class ProxyMiddleware
     }
 
     // ── Step 6 ────────────────────────────────────────────────────────────────
-    // Build the ProxyRequest record from all captured data and fire-and-forget
-    // the save via the recording service.
+    // Build the ProxyRequest record from all captured data, applying body-size
+    // limits before storage, and fire-and-forget the save via the recording service.
     private async Task RecordRequestAsync(
         HttpContext context, HttpResponseMessage upstreamResponse,
         MemoryStream requestBodyMs, MemoryStream responseBodyMs,
@@ -250,13 +263,24 @@ public class ProxyMiddleware
     {
         requestBodyMs.Position = 0;
         var requestBodyText = requestBodyMs.Length > 0
-            ? await ReadAsStringAsync(requestBodyMs)
+            ? TruncateForStorage(await ReadAsStringAsync(requestBodyMs), _maxStoredBodyBytes)
             : null;
 
         responseBodyMs.Position = 0;
-        var responseBodyText = responseBodyMs.Length > 0
+        var responseBodyRaw = responseBodyMs.Length > 0
             ? await DecodeResponseBodyAsync(responseBodyMs, upstreamResponse.Content.Headers.ContentEncoding)
             : null;
+        var responseBodyText = TruncateForStorage(responseBodyRaw, _maxStoredBodyBytes);
+
+        if (requestBodyText != null && requestBodyMs.Length > _maxStoredBodyBytes)
+            _logger.LogDebug(
+                "Request body truncated for storage: original {OriginalBytes} bytes, limit {LimitBytes} bytes",
+                requestBodyMs.Length, _maxStoredBodyBytes);
+
+        if (responseBodyText != null && responseBodyMs.Length > _maxStoredBodyBytes)
+            _logger.LogDebug(
+                "Response body truncated for storage: original {OriginalBytes} bytes, limit {LimitBytes} bytes",
+                responseBodyMs.Length, _maxStoredBodyBytes);
 
         var record = new ProxyRequest
         {
@@ -302,5 +326,21 @@ public class ProxyMiddleware
     {
         using var reader = new StreamReader(ms, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
         return await reader.ReadToEndAsync();
+    }
+
+    // Truncates a body string to at most maxBytes UTF-8 bytes for database
+    // storage.  If truncation occurs, a note describing the original byte count
+    // is appended so the truncation is visible in the recorded data.
+    // Returns null unchanged; returns the original string if it fits within the limit.
+    internal static string? TruncateForStorage(string? body, int maxBytes)
+    {
+        if (body == null) return null;
+
+        var encoded = Encoding.UTF8.GetBytes(body);
+        if (encoded.Length <= maxBytes) return body;
+
+        // Find a safe truncation point that doesn't split a multi-byte character.
+        var truncated = Encoding.UTF8.GetString(encoded, 0, maxBytes);
+        return truncated + $"\n[TRUNCATED: original size was {encoded.Length} bytes, stored first {maxBytes} bytes]";
     }
 }

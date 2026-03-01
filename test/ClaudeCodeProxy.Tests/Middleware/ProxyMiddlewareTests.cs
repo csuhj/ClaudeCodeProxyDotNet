@@ -43,9 +43,15 @@ public class ProxyMiddlewareTests
 
     private static ProxyMiddleware CreateMiddlewareCore(HttpClient httpClient, IRecordingService recordingService)
     {
+        var options = new UpstreamOptions { BaseUrl = UpstreamBaseUrl };
+        return CreateMiddlewareCore(httpClient, recordingService, options);
+    }
+
+    private static ProxyMiddleware CreateMiddlewareCore(
+        HttpClient httpClient, IRecordingService recordingService, UpstreamOptions options)
+    {
         var factory = new TestHttpClientFactory(httpClient);
         var logger = NullLogger<ProxyMiddleware>.Instance;
-        var options = new UpstreamOptions { BaseUrl = UpstreamBaseUrl };
         return new ProxyMiddleware(_ => Task.CompletedTask, factory, logger, options, recordingService);
     }
 
@@ -432,6 +438,123 @@ public class ProxyMiddlewareTests
             gz.Write(bytes);
         }
         return ms.ToArray();
+    }
+
+    // ── TruncateForStorage unit tests ─────────────────────────────────────────
+
+    [Test]
+    public void TruncateForStorage_NullBody_ReturnsNull()
+    {
+        var result = ProxyMiddleware.TruncateForStorage(null, 100);
+        Assert.That(result, Is.Null);
+    }
+
+    [Test]
+    public void TruncateForStorage_BodyWithinLimit_ReturnsUnchanged()
+    {
+        const string body = "Hello, World!";
+        var result = ProxyMiddleware.TruncateForStorage(body, 1000);
+        Assert.That(result, Is.EqualTo(body));
+    }
+
+    [Test]
+    public void TruncateForStorage_BodyExceedsLimit_ReturnsTruncatedWithNote()
+    {
+        // Build a body that is definitely over 20 bytes when UTF-8 encoded.
+        const string body = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  // 26 bytes
+        var result = ProxyMiddleware.TruncateForStorage(body, 10);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Does.StartWith("ABCDEFGHIJ"));
+        Assert.That(result, Does.Contain("[TRUNCATED:"));
+        Assert.That(result, Does.Contain("26 bytes"));
+        Assert.That(result, Does.Contain("10 bytes"));
+    }
+
+    [Test]
+    public void TruncateForStorage_EmptyBody_ReturnsEmpty()
+    {
+        var result = ProxyMiddleware.TruncateForStorage("", 100);
+        Assert.That(result, Is.EqualTo(""));
+    }
+
+    // ── Body-truncation integration tests ────────────────────────────────────
+
+    [Test]
+    public async Task RecordingService_ResponseBodyExceedsLimit_ReceivesTruncatedBody()
+    {
+        // A response body larger than the configured limit should be truncated
+        // before being handed to the recording service.
+        var longBody = new string('X', 200);  // 200 chars / bytes
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Get, $"{UpstreamBaseUrl}/v1/models")
+            .Respond(HttpStatusCode.OK, "application/json", longBody);
+
+        var recordingMock = new Mock<IRecordingService>();
+        var options = new UpstreamOptions { BaseUrl = UpstreamBaseUrl, MaxStoredBodyBytes = 50 };
+        var middleware = CreateMiddlewareCore(mockHttp.ToHttpClient(), recordingMock.Object, options);
+        var context = CreateContext("GET", "/v1/models");
+
+        await middleware.InvokeAsync(context);
+
+        recordingMock.Verify(
+            r => r.Record(It.Is<ProxyRequest>(req =>
+                req.ResponseBody != null &&
+                req.ResponseBody.Contains("[TRUNCATED:") &&
+                req.ResponseBody.StartsWith(new string('X', 50)))),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task RecordingService_RequestBodyExceedsLimit_ReceivesTruncatedBody()
+    {
+        // A request body larger than the configured limit should be truncated
+        // before being handed to the recording service.
+        var longBody = new string('Y', 200);
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Post, $"{UpstreamBaseUrl}/v1/messages")
+            .Respond(HttpStatusCode.OK, "application/json", """{"id":"msg_1"}""");
+
+        var recordingMock = new Mock<IRecordingService>();
+        var options = new UpstreamOptions { BaseUrl = UpstreamBaseUrl, MaxStoredBodyBytes = 50 };
+        var middleware = CreateMiddlewareCore(mockHttp.ToHttpClient(), recordingMock.Object, options);
+        var context = CreateContext("POST", "/v1/messages", body: longBody,
+            headers: new Dictionary<string, string> { ["Content-Type"] = "application/json" });
+
+        await middleware.InvokeAsync(context);
+
+        recordingMock.Verify(
+            r => r.Record(It.Is<ProxyRequest>(req =>
+                req.RequestBody != null &&
+                req.RequestBody.Contains("[TRUNCATED:") &&
+                req.RequestBody.StartsWith(new string('Y', 50)))),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task RecordingService_BodyWithinLimit_IsNotTruncated()
+    {
+        const string responseBody = """{"id":"msg_1"}""";
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp
+            .When(HttpMethod.Get, $"{UpstreamBaseUrl}/v1/models")
+            .Respond(HttpStatusCode.OK, "application/json", responseBody);
+
+        var recordingMock = new Mock<IRecordingService>();
+        var options = new UpstreamOptions { BaseUrl = UpstreamBaseUrl, MaxStoredBodyBytes = 1_048_576 };
+        var middleware = CreateMiddlewareCore(mockHttp.ToHttpClient(), recordingMock.Object, options);
+        var context = CreateContext("GET", "/v1/models");
+
+        await middleware.InvokeAsync(context);
+
+        recordingMock.Verify(
+            r => r.Record(It.Is<ProxyRequest>(req => req.ResponseBody == responseBody)),
+            Times.Once);
     }
 
     // ── Test double ───────────────────────────────────────────────────────────
