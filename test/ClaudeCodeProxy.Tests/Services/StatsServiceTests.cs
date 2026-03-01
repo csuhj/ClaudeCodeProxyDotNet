@@ -15,6 +15,7 @@ public class StatsServiceTests
 {
     private SqliteConnection _connection = null!;
     private ProxyDbContext _db = null!;
+    private RecordingRepository _repository = null!;
     private StatsService _sut = null!;
 
     [SetUp]
@@ -30,7 +31,8 @@ public class StatsServiceTests
         _db = new ProxyDbContext(options);
         _db.Database.EnsureCreated();
 
-        _sut = new StatsService(_db);
+        _repository = new RecordingRepository(_db);
+        _sut = new StatsService(_repository);
     }
 
     [TearDown]
@@ -66,8 +68,8 @@ public class StatsServiceTests
 
     private async Task SeedAsync(params ProxyRequest[] requests)
     {
-        _db.ProxyRequests.AddRange(requests);
-        await _db.SaveChangesAsync();
+        foreach (var request in requests)
+            await _repository.AddAsync(request);
     }
 
     // ── GetRequestsPerHour ────────────────────────────────────────────────────
