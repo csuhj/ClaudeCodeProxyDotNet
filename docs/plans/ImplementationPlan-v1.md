@@ -235,26 +235,72 @@ Create `Controllers/StatsController.cs` with:
 
 ---
 
-## Phase 7 (Stretch): HTML Dashboard
+## Phase 7 (Stretch): Angular SPA Dashboard
 
-### Task 7.1 — Static HTML Page
-Create `wwwroot/index.html`:
-- A minimal, dependency-free HTML page (no framework required)
-- Two sections: "Requests per Hour (last 24h)" and "Requests per Day (last 30d)"
+### Rationale
+Rather than a static HTML page, Phase 7 delivers a proper Angular Single Page Application (SPA) that consumes the stats API from Phase 6. The SPA is developed as a standalone Angular project, built to static assets, and served by the .NET backend via `UseStaticFiles`. During development the Angular dev server proxies API calls to the .NET backend.
 
-### Task 7.2 — Fetch and Render Stats
-Add inline `<script>` to `index.html`:
-- On page load, fetch `/api/stats/hourly` and `/api/stats/daily`
-- Render results as simple HTML tables showing: time bucket, request count, LLM request count, input tokens, output tokens
-- Show a loading state and a clear error message if the fetch fails
+### Task 7.1 — Scaffold the Angular Project
+- Create the Angular app in `src/ClaudeCodeProxyAngular/` using the Angular CLI:
+  ```bash
+  ng new ClaudeCodeProxyAngular --routing=false --style=scss --standalone
+  ```
+- Add it to `.gitignore` exclusions for `node_modules/` and `dist/`
+- Record the Angular CLI version and Node requirement in `CLAUDE.md`
 
-### Task 7.3 — Serve Static Files
-- Add `app.UseStaticFiles()` to `Program.cs`
-- Confirm navigating to `http://localhost:<port>/` serves the dashboard
+### Task 7.2 — Configure the Angular Dev Proxy
+- Create `src/ClaudeCodeProxyAngular/proxy.conf.json` to forward `/api/**` to the .NET backend during development:
+  ```json
+  {
+    "/api": {
+      "target": "http://localhost:5000",
+      "secure": false,
+      "changeOrigin": true
+    }
+  }
+  ```
+- Add a `start` script to `package.json` that passes `--proxy-config proxy.conf.json`
+- Ensure the .NET backend has CORS enabled for the Angular dev-server origin (`http://localhost:4200`) so that browser requests are not blocked during development
 
-### Task 7.4 — Optional: Basic Chart
-- If desired, add a small inline SVG bar chart (no external JS library) for the daily view
-- Keep this optional and clearly separated so it can be skipped without affecting the rest of the dashboard
+### Task 7.3 — Create the Stats API Service
+Create `src/app/stats.service.ts`:
+- Define TypeScript interfaces matching the API response shapes:
+  - `HourlyStat { hour: string; requestCount: number; llmRequestCount: number; totalInputTokens: number; totalOutputTokens: number; }`
+  - `DailyStat` — same shape with a `day` field instead of `hour`
+- Inject `HttpClient` and expose two methods:
+  - `getHourly(from?: string, to?: string): Observable<HourlyStat[]>`
+  - `getDaily(from?: string, to?: string): Observable<DailyStat[]>`
+
+### Task 7.4 — Build the Dashboard Components
+Create two standalone Angular components:
+
+**`HourlyStatsComponent`** (`src/app/hourly-stats/`):
+- Fetches and displays hourly data for the last 24 hours in a sortable table
+- Columns: Hour, Requests, LLM Requests, Input Tokens, Output Tokens
+- Shows a loading spinner while fetching and an error banner on failure
+
+**`DailyStatsComponent`** (`src/app/daily-stats/`):
+- Fetches and displays daily data for the last 30 days in a sortable table
+- Same columns as above, with the time bucket labelled "Day"
+- Includes a simple bar chart rendered with Angular's `NgStyle` and CSS flexbox (no external charting library) showing daily total requests over time
+
+**`AppComponent`** — update the root component to:
+- Display both components in a single-page layout with a header
+- Show the proxy name and current date/time in the header
+
+### Task 7.5 — Build Angular Output into wwwroot
+- Add an `npm run build` script that outputs to `src/ClaudeCodeProxy/wwwroot/` (using Angular's `outputPath` in `angular.json`)
+- Add `app.UseStaticFiles()` and a fallback route to `Program.cs` so the .NET server serves `index.html` for any unmatched path (required for Angular's client-side router if routing is later added):
+  ```csharp
+  app.MapFallbackToFile("index.html");
+  ```
+- Confirm navigating to `http://localhost:<port>/` serves the Angular app after a build
+
+### Task 7.6 — Update CLAUDE.md
+Document the full development workflow:
+- How to run the Angular dev server alongside the .NET backend
+- How to build the SPA and embed it into the .NET static files
+- Node/npm version requirements
 
 ---
 
@@ -266,7 +312,7 @@ Phase 1  →  Phase 2  →  Phase 3  →  Phase 4  →  Phase 5
                                                Phase 6  →  Phase 7
 ```
 
-Phases 6 and 7 are independent of each other and can be done in either order once Phase 5 is complete.
+Phase 6 must be completed before Phase 7, as the Angular SPA depends on the stats API endpoints.
 
 ---
 
@@ -280,3 +326,4 @@ Phases 6 and 7 are independent of each other and can be done in either order onc
 - [ ] The project builds cleanly with `dotnet build`
 - [ ] Unit tests pass with `dotnet test`
 - [ ] `CLAUDE.md` documents how to build, run, and test the proxy
+- [ ] An Angular SPA served at `http://localhost:<port>/` displays hourly and daily token usage stats fetched from the API

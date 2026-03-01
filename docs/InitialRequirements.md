@@ -15,5 +15,5 @@ Claude Code can be configured to use a proxy with the `ANTHROPIC_BASE_URL` envir
 ## Stretch Requirements
 
 5. Create an endpoint on the proxy to be able to return aggregated information from the SQLite database on the number of requests sent per hour/per day
-6. Create a simple HTML user interface to view some of these results as well.
+6. Create a simple Angular Single Page App user interface to view some of these results as well.
 
