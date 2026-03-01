@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/angular';
 import { Subject, of, throwError } from 'rxjs';
 import { DailyStats } from './daily-stats';
-import { StatsService, StatsBucket } from '../services/stats.service';
+import { StatsService, StatsBucket } from '../../services/stats.service';
 
 const mockBuckets: StatsBucket[] = [
   {

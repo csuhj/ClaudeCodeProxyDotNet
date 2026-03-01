@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { StatsService, StatsBucket } from '../services/stats.service';
+import { StatsService, StatsBucket } from '../../services/stats.service';
 
 @Component({
   selector: 'app-hourly-stats',
