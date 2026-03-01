@@ -1,0 +1,123 @@
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+:root {
+  --color-bg:          #0f1117;
+  --color-surface:     #1a1d27;
+  --color-header-bg:   #12151e;
+  --color-border:      #2a2d3e;
+  --color-text:        #e2e4ef;
+  --color-text-muted:  #7a7e9a;
+  --color-accent:      #7c6ef0;
+  --color-accent-alt:  #5a9cf5;
+  --color-error:       #e05252;
+  --color-bar-track:   #2a2d3e;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Stats sections ─────────────────────────────────────────────────────── */
+.stats-section {
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 1.25rem;
+
+    .subtitle {
+      font-weight: 400;
+      color: var(--color-text-muted);
+      font-size: 0.85rem;
+    }
+  }
+}
+
+/* ── State messages ─────────────────────────────────────────────────────── */
+.state-message {
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+
+  &.loading {
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+  }
+
+  &.error {
+    background: rgba(224, 82, 82, 0.1);
+    color: var(--color-error);
+    border: 1px solid rgba(224, 82, 82, 0.3);
+  }
+
+  &.empty {
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+  }
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead {
+    background: var(--color-surface);
+
+    th {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+
+      &.num { text-align: right; }
+    }
+  }
+
+  tbody {
+    tr {
+      border-top: 1px solid var(--color-border);
+      transition: background 0.1s;
+
+      &:hover {
+        background: var(--color-surface);
+      }
+    }
+
+    td {
+      padding: 0.6rem 1rem;
+      color: var(--color-text);
+      white-space: nowrap;
+
+      &.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-accent-alt);
+      }
+    }
+  }
+}

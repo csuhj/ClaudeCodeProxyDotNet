@@ -1,0 +1,18 @@
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-icon">⬡</span>
+      <span class="brand-name">Claude Code Proxy</span>
+    </div>
+    <span class="header-date">{{ now | date:'dd MMM yyyy HH:mm':'UTC' }} UTC</span>
+  </div>
+</header>
+
+<main class="app-main">
+  <app-hourly-stats />
+  <app-daily-stats />
+</main>
+
+<footer class="app-footer">
+  ClaudeCodeProxy — usage recorded locally
+</footer>

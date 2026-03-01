@@ -1,0 +1,53 @@
+<section class="stats-section">
+  <h2>Requests per Day <span class="subtitle">(last 30 days)</span></h2>
+
+  @if (loading()) {
+    <div class="state-message loading">Loading...</div>
+  } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+  } @else if (data().length === 0) {
+    <div class="state-message empty">No data recorded yet.</div>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Day (UTC)</th>
+            <th class="num">Requests</th>
+            <th class="num">LLM Calls</th>
+            <th class="num">Input Tokens</th>
+            <th class="num">Output Tokens</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (bucket of data(); track bucket.timeBucket) {
+            <tr>
+              <td>{{ bucket.timeBucket | date:'dd MMM yyyy':'UTC' }}</td>
+              <td class="num">{{ bucket.requestCount | number }}</td>
+              <td class="num">{{ bucket.llmRequestCount | number }}</td>
+              <td class="num">{{ bucket.totalInputTokens | number }}</td>
+              <td class="num">{{ bucket.totalOutputTokens | number }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="chart">
+      <h3>Daily Requests</h3>
+      @for (bucket of data(); track bucket.timeBucket) {
+        <div class="chart-row">
+          <span class="chart-label">{{ bucket.timeBucket | date:'dd MMM':'UTC' }}</span>
+          <div class="chart-bar-container">
+            <div
+              class="chart-bar"
+              [ngStyle]="{ width: barWidthPercent(bucket.requestCount) + '%' }"
+            >
+              <span class="chart-value">{{ bucket.requestCount }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,36 @@
+<section class="stats-section">
+  <h2>Requests per Hour <span class="subtitle">(last 24 hours)</span></h2>
+
+  @if (loading()) {
+    <div class="state-message loading">Loading...</div>
+  } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+  } @else if (data().length === 0) {
+    <div class="state-message empty">No data recorded yet.</div>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Hour (UTC)</th>
+            <th class="num">Requests</th>
+            <th class="num">LLM Calls</th>
+            <th class="num">Input Tokens</th>
+            <th class="num">Output Tokens</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (bucket of data(); track bucket.timeBucket) {
+            <tr>
+              <td>{{ bucket.timeBucket | date:'dd MMM HH:mm':'UTC' }}</td>
+              <td class="num">{{ bucket.requestCount | number }}</td>
+              <td class="num">{{ bucket.llmRequestCount | number }}</td>
+              <td class="num">{{ bucket.totalInputTokens | number }}</td>
+              <td class="num">{{ bucket.totalOutputTokens | number }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

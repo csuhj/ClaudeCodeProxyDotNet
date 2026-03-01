@@ -34,6 +34,18 @@ builder.Services.AddSingleton<IRecordingService, RecordingService>();
 builder.Services.AddScoped<IStatsService, StatsService>();
 builder.Services.AddControllers();
 
+// ── CORS ──────────────────────────────────────────────────────────────────────
+// Allow the Angular dev server (http://localhost:4200) to call the API.
+// In production the SPA is served from wwwroot on the same origin,
+// so CORS is not required but is harmless to enable.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularDev", policy =>
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 // ── HTTP Client ───────────────────────────────────────────────────────────────
 // A named client is used so the middleware can request it by name via
 // IHttpClientFactory. AutomaticDecompression is disabled so compressed
@@ -57,6 +69,15 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ProxyDbContext>();
     db.Database.Migrate();
 }
+
+// Serve the Angular SPA from wwwroot. UseDefaultFiles rewrites "/" to
+// "/index.html"; UseStaticFiles then short-circuits the pipeline by serving
+// the file before the proxy middleware is reached.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+// Apply CORS policy so the Angular dev server (port 4200) can call /api/*.
+app.UseCors("AngularDev");
 
 // Map API controllers before the proxy so that /api/stats/* is handled locally.
 // ProxyMiddleware checks context.GetEndpoint() and delegates to _next when a
