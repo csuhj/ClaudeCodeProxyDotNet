@@ -64,7 +64,7 @@ Run both servers in separate terminals:
 # Terminal 1 — .NET backend
 dotnet run --project src/ClaudeCodeProxy
 
-# Terminal 2 — Angular dev server (proxies /api/* to http://localhost:5000)
+# Terminal 2 — Angular dev server (proxies /api/* to http://localhost:5051)
 cd src/ClaudeCodeProxyAngular
 npm start
 ```
