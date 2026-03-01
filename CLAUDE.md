@@ -68,7 +68,7 @@ dotnet run --project src/ClaudeCodeProxy
 cd src/ClaudeCodeProxyAngular
 npm start
 ```
-Then open `http://localhost:4200` in your browser.
+Then open `http://127.0.0.1:4200` in your browser.
 
 ### Build SPA into wwwroot (production)
 ```bash

@@ -35,13 +35,14 @@ builder.Services.AddScoped<IStatsService, StatsService>();
 builder.Services.AddControllers();
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-// Allow the Angular dev server (http://localhost:4200) to call the API.
-// In production the SPA is served from wwwroot on the same origin,
-// so CORS is not required but is harmless to enable.
+// Allow the Angular dev server to call the API. Both localhost and 127.0.0.1
+// are included because the browser may send either as the origin depending on
+// how the devcontainer port is forwarded. In production the SPA is served from
+// wwwroot on the same origin, so CORS is not required but is harmless to enable.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularDev", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
