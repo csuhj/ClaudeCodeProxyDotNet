@@ -312,3 +312,40 @@ Can you write up all the steps after the inital phase 7 implementation into a Ph
 ```
 
 This is also done.
+
+Then in a new session with a fresh context
+
+```
+Can you add unit tests to the Angular app:
+- Can you add tests for the stats service and also the daily stats and hourly stats
+- Use Jest to do this
+- For the daily and hourly stats components can you use the Testing Library test approach, mocking out
+the stats service
+- For the stats service can you mock out the http client and test the service methods work
+```
+
+These tests are addsed.  I then ran all the tests manually and noticed a test fail for the app.spec.ts
+
+```
+Can you also check the tests for the app component and update these to pass
+```
+
+This is done.  Then I decide to move a few files around to make the project structure slightly neater:
+
+```
+Can you move the stats service into a `services` directory
+```
+
+Does it
+
+```
+And can you move the daily-stats and hourly-stats directories into a `components` directory
+```
+
+Does it
+
+```
+Can you update the Phase7ExtraSteps document to include these steps
+```
+
+Does it
