@@ -206,3 +206,28 @@ It wrote the failing test and then adjusted the code to match.  Then retesting t
 Can you write down a file in the docs/plans dir called Phase4AfterTestingSteps.md with all of the steps you have
 followed to fix the issue above.
 ```
+
+### Phase 5
+
+```
+You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already completed
+Phases 1, 2, 3 and 4.  Can you adjust the implementation plan and remove step 5.3, as previously in the code
+reviews after phase 3 we said we didn't want to use the ANTHROPIC_BASE_URL environment variable to configure the
+proxy.  Then can you continue with phase 5 and don't move on to any further phases at the moment - just phase 5
+and then stop.  Once you have completed phase 5 can you write down a file in the docs/plans dir called Phase5Steps.md
+with all of the steps you have followed to implement phase 5.
+```
+
+Did this work, but then this meant the tests produced a lot more logging
+
+```
+When running the tests, can you stop the logging output to the console
+```
+
+```
+Can you also add a new End to End test to cover resposnes having a gzip content encoding
+```
+
+```
+Can you write up the last 2 steps into a Phase5ExtraSteps.md file
+```
