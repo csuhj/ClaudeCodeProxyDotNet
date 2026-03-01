@@ -12,11 +12,16 @@ I haven't hand-edited any of the code or project files, etc.  The only changes I
 
 ## Prompts
 
+### Initial planning
 ```
-There is an "InitialRequirements.md" file in the docs directory.  Can you examine the "Initial Requirements for Version 1" section and plan out a detailed set of tasks to complete to meet these objectives.  Can you then write these tasks out into the file "ImplementationPlan-v1.md" in the docs directory
+There is an "InitialRequirements.md" file in the docs directory.  Can you examine the "Initial Requirements for Version 1"
+section and plan out a detailed set of tasks to complete to meet these objectives.  Can you then write these tasks out
+into the file "ImplementationPlan-v1.md" in the docs directory
 ```
 
-Claude then created the [ImplementationPlan-v1.md](./plans/ImplementationPlan-v1.md) document.  This was checked and seemed reasonable, although Claude had originally suggested implementing the project with .Net 8 or .Net 9.  I didn't change this by hand, but instead asked Claude to do it.
+Claude then created the [ImplementationPlan-v1.md](./plans/ImplementationPlan-v1.md) document.  This was checked and seemed
+reasonable, although Claude had originally suggested implementing the project with .Net 8 or .Net 9.  I didn't change this
+by hand, but instead asked Claude to do it.
 
 ```
 Can you update the plan in phase 1 to use .Net 10
@@ -24,11 +29,15 @@ Can you update the plan in phase 1 to use .Net 10
 
 Claude then made the appropriate change to the plan.
 
+### Phase 1
+
 ```
-ok thanks - can you now implement phase 1 of the plan.  Don't move on to any further phases at the moment - just phase 1 and then stop
+ok thanks - can you now implement phase 1 of the plan.  Don't move on to any further phases at the moment - just phase 1
+and then stop
 ```
 
-At one point during it's implementation Claude was searching for a `.sln` file, but it had previously created the solution file as a `.slnx` file, so I interjected:
+At one point during it's implementation Claude was searching for a `.sln` file, but it had previously created the solution
+file as a `.slnx` file, so I interjected:
 
 ```
 you are searching for a .sln file - but you should be searching for a .slnx file - try that
@@ -37,7 +46,8 @@ you are searching for a .sln file - but you should be searching for a .slnx file
 It then found the file and continued until it had completed phase 1.
 
 ```
-Can you adjust the implementationplan-v1 doc and the Claude.md file to say that when unit tests will be added, they will be done using nunit
+Can you adjust the implementationplan-v1 doc and the Claude.md file to say that when unit tests will be added, they will
+be done using nunit
 ```
 
 It did so, but didn't have to change any code as it hadn't written any tests yet.
@@ -46,62 +56,97 @@ It did so, but didn't have to change any code as it hadn't written any tests yet
 Can you write down all of the steps you have followed so far into the file docs/Phase1Steps.md
 ```
 
-It created the [Phase1Steps.md](./plans/Phase1Steps.md) file - documenting the steps it had taken so far, based on the conversation history.
+It created the [Phase1Steps.md](./plans/Phase1Steps.md) file - documenting the steps it had taken so far, based on the
+conversation history.
+
+### Phase 2
 
 ```
-Can you now implement phase 2 of the plan.  Again, don't move on to any further phases at the moment - just phase 2 and then stop.  Once you have completed phase 2 can you write down a file in the docs dir called Phase2Steps.md with all of the steps you have followed to implement phase 2.
+Can you now implement phase 2 of the plan.  Again, don't move on to any further phases at the moment - just phase 2 and
+then stop.  Once you have completed phase 2 can you write down a file in the docs dir called Phase2Steps.md with all of
+the steps you have followed to implement phase 2.
 ```
 
 It created the reverse proxy middleware and wired it into the project, and wrote [Phase2Steps.md](./plans/Phase2Steps.md).
 
 ```
-Can you add a step to the end of phase 2 of the plan to add unit testing to the ProxyMiddleware to check that it correctly forwards on requests and handles the responses.  The RichardSzalay.MockHttp library might be useful for this, but if you think there is a better alternative then fine.  Then once you have completed this extra work can you write down a file in the docs dir called Phase2ExtraSteps.md with all of the steps you have followed to implement this.
+Can you add a step to the end of phase 2 of the plan to add unit testing to the ProxyMiddleware to check that it correctly
+forwards on requests and handles the responses.  The RichardSzalay.MockHttp library might be useful for this, but if you
+think there is a better alternative then fine.  Then once you have completed this extra work can you write down a file in
+the docs dir called Phase2ExtraSteps.md with all of the steps you have followed to implement this.
 ```
 
 It created the tests using the suggested library and wrote [Phase2ExtraSteps.md](./plans/Phase2ExtraSteps.md).
 
 Claude's context was getting full (to 78%) so I created a new conversation and continued with the following.
 
-```
-You are running through the implementation plan in docs/ImplementationPlan-v1.md.  You've already completed Phase 1 and Phase 2.  Can you now implement phase 3 of the plan.  Don't move on to any further phases at the moment - just phase 3 and then stop.  Once you have completed phase 3 can you write down a file in the docs dir called Phase3Steps.md with all of the steps you have followed to implement phase 3.
-```
-
-At one point during it's implementation Claude was suggesting injecting a real version of the RecordingService to the middleware to get the existing tests to pass.  I stopped it and made a different suggestion:
+### Phase 3
 
 ```
-Can you think about this again please - I think you should use the Moq library and add a Mock version of the recording service here.  Then the mock can be asserted that it was called without needing to be a real service making real changes to a database. 
+You are running through the implementation plan in docs/ImplementationPlan-v1.md.  You've already completed Phase 1 and
+Phase 2.  Can you now implement phase 3 of the plan.  Don't move on to any further phases at the moment - just phase 3
+and then stop.  Once you have completed phase 3 can you write down a file in the docs dir called Phase3Steps.md with all
+of the steps you have followed to implement phase 3.
 ```
 
-It created the database recording mechanism and wired it into the reverse proxy middleware, fixed  the tests and added some new ones and wrote [Phase3Steps.md](./plans/Phase3Steps.md).
+At one point during it's implementation Claude was suggesting injecting a real version of the RecordingService to the
+middleware to get the existing tests to pass.  I stopped it and made a different suggestion:
+
+```
+Can you think about this again please - I think you should use the Moq library and add a Mock version of the recording
+service here.  Then the mock can be asserted that it was called without needing to be a real service making real changes
+to a database. 
+```
+
+It created the database recording mechanism and wired it into the reverse proxy middleware, fixed  the tests and added
+some new ones and wrote [Phase3Steps.md](./plans/Phase3Steps.md).
 
 I then manually performed a code review and raised some points to address in [CodeReviewsAfterPhase3.md](./plans/CodeReviewsAfterPhase3.md).
 
 ```
-You are running through the implementation plan in docs/ImplementationPlan-v1.md.  You've already completed Phase 1, Phase 2 and phase 3.  There has now been a code review after Phase 3 and the code review comments have been made in /docs/CodeReviewsAfterPhase3.md.  Can you action the next review comment that hasn't already been addressed (i.e. without a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
+You are running through the implementation plan in docs/ImplementationPlan-v1.md.  You've already completed Phase 1,
+Phase 2 and phase 3.  There has now been a code review after Phase 3 and the code review comments have been made in
+/docs/CodeReviewsAfterPhase3.md.  Can you action the next review comment that hasn't already been addressed (i.e. without
+a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have
+completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask,
+otherwise crack on.
 ```
 
 It addressed the first point (breaks up middleware into smaller methods)
 
 ```
-Can you action the next review comment that hasn't already been addressed (i.e. without a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
+Can you action the next review comment that hasn't already been addressed (i.e. without a cross next to it).  Then when
+you are finished modify the code review doc so there is a cross next to the point you have completed.  Then stop -
+ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
 ```
 
-It addressed the second point (implement repository pattern).  I then ran exactly the same prompt 2 more times to address the third (add tests to the recording service) and fourth points (moved the docs).  I decided it should also move one more document so said:
+It addressed the second point (implement repository pattern).  I then ran exactly the same prompt 2 more times to address
+the third (add tests to the recording service) and fourth points (moved the docs).  I decided it should also move one
+more document so said:
 
 ```
 Can you also move the code review doc your working on into the plans directory too
 ```
 
-And it did so.  I then continued with the same "Action the code review" prompt and it did the fifth point (move code into src and dest folders).  Claude's context was getting full again (to 62%) so I created a new conversation and continued with the following to address the final code review point (create end to end tests)
+And it did so.  I then continued with the same "Action the code review" prompt and it did the fifth point (move code
+into src and dest folders).  Claude's context was getting full again (to 62%) so I created a new conversation and continued
+with the following to address the final code review point (create end to end tests)
 
 ```
-You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already completed Phase 1, Phase 2 and phase 3.  There has now been a code review after Phase 3 and the code review comments have been made in /docs/CodeReviewsAfterPhase3.md.  Can you action the next review comment that hasn't already been addressed (i.e. without a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
+You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already completed Phase 1,
+Phase 2 and phase 3.  There has now been a code review after Phase 3 and the code review comments have been made in
+/docs/CodeReviewsAfterPhase3.md.  Can you action the next review comment that hasn't already been addressed (i.e. without
+a cross next to it).  Then when you are finished modify the code review doc so there is a cross next to the point you have
+completed.  Then stop - ONLY DO ONE CODE REVIEW POINT.  If there is any uncertainty as what to do then feel free to ask,
+otherwise crack on.
 ```
 
 It seemed to get a bit stuck with the tests failing.  Perhaps I got a bit impatient, but I interrupted the agent and said:
 
 ```
-I've interrupted you to try and help - it looks like the tests aren't passing.  I think you need to update the upstreamOptions service inside builder.ConfigureTestServices() to be bound to the new configuration which has the dummy Upstream:BaseUrl set up.  Give that a try
+I've interrupted you to try and help - it looks like the tests aren't passing.  I think you need to update the upstreamOptions
+service inside builder.ConfigureTestServices() to be bound to the new configuration which has the dummy Upstream:BaseUrl set
+up.  Give that a try
 ```
 
 After a while it sorted it out and the tests passed.
@@ -111,3 +156,53 @@ Can you write down all of the steps you have followed so far and append them to 
 ```
 
 The document was updated - the code review has been completed.
+
+### Phase 4
+
+```
+You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already completed Phase 1,
+Phase 2 and Phase 3.  Please now continue with phase 4 and don't move on to any further phases at the moment - just phase 4
+and then stop.  Once you have completed phase 4 can you write down a file in the docs dir called Phase4Steps.md with all of
+the steps you have followed to implement phase 4.
+
+To help with implementing phase 4 I have included a sample request and results file for a call to the `/v1/messages` endpoint.
+These can be found in docs/sample-data.  Note the sample result is of content type `text\event-stream` so is a set of JSON
+responses, not just a single JSON object.
+
+If there is any uncertainty as what to do then feel free to ask, otherwise crack on.
+```
+
+It created the token parser and updated services and tests as required, although the prompt accidentally asked for the Phase4Steps.md to be put in the wrong directory.  And the RecordingServiceTest file also now stood out as being in the wrong directory.
+
+```
+could you move the phase4steps.md to the docs/plans dir
+```
+
+```
+could you move the RecordingServiceTests into the Services subdir too
+```
+
+It did both these things (adjusting references where required).  Running the proxy to manually test it, I found that the token recording wasn't working properly, with no data in the database.
+
+```
+can you add tests to the recording service to ensure that LLM usage data is also correctly recorded and saved
+```
+
+```
+Can you also add tests to the Recording repository - just a small number to check that proxy requests and llm usage results can be saved correctly
+```
+
+As requested, this only changed the tests, so the token usage still wasn't being recorded.  I investigated manually and found that the results from the proxy were being returned gzipped in most cases.
+
+```
+I have manually tested this code and it appears that the proxied responses can have a content encoding of gzip.  Can
+you Write a test for the proxy middleware that has an example of a gzipped response and then adjust the middleware so 
+it passes an unzipped version of the response to the recording service.
+```
+
+It wrote the failing test and then adjusted the code to match.  Then retesting this manually showed the results were now recorded correctly.
+
+```
+Can you write down a file in the docs/plans dir called Phase4AfterTestingSteps.md with all of the steps you have
+followed to fix the issue above.
+```
