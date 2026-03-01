@@ -253,3 +253,62 @@ Then you can add what you had to do to a new Phase5ExtraSteps doc
 ```
 
 It then completed this work.
+
+### Phase 7
+
+```
+You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already
+completed Phases 1 to 6.  This implementation plan was based on the docs/InitialRequirements.md, but I
+have changed the last requirement so that the plan for phase 7 should be changed to implement a Angular
+SPA app to visualise the results held in the database.  Can you update the phase 7 part of the plan to
+reflect this.
+```
+
+It updated the plan
+
+```
+Now can you run through phase 7 of the plan and then stop.  Once you have completed phase 7 can you write
+down a file in the docs/plans dir called Phase7Steps.md with all of the steps you have followed to
+implement phase 7.
+```
+
+Then as it was processing through this it was going to install the Angular CLI globally, but I wanted this to be installed just locally, so I interjected:
+
+```
+Rather than installing the Angular CLI globally, can you install it just for this project, please
+```
+
+The innitial version of the Angular app was then created.
+
+```
+Shouldn't the contents of src/ClaudeCodeProxy/wwwroot that are built up as part of the angular build be git
+ignored as we don't want these to be accidentally committed into the repo?
+```
+
+This is actioned.  However, when testing this manually I noticed this didn't work properly through the VS Code devcontainers, but this could be fixed by changing the host from `localhost` to `127.0.0.1`:
+
+```
+Can you change the npm start command to specify the host 127.0.01 - as this makes it easy to run via
+devcontainers in VSCode
+```
+
+Then as this is being actioned, the CORS settings in the API is being changed incorrectly, so I interject:
+
+```
+The origin can be localhost or 127.0..01 for CORS here - include both
+```
+
+This is then fixed, but then the Angular app can't connect to the API.  Perhaps the port is wrong:
+
+```
+Also - the app doesn't appear to be working as I think the app assumes the API is running on port 5000
+when it looks like it is running on port 5051 - can you check this?
+```
+
+This is fixed and the app now works.
+
+```
+Can you write up all the steps after the inital phase 7 implementation into a Phase7ExtraSteps.md file
+```
+
+This is also done.
