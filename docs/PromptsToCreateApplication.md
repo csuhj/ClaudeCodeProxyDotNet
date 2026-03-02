@@ -369,7 +369,7 @@ The plan is built
 Can you create a directory in docs/plans called `v1` and move all the XXXSteps.md files into it,
 then create a `v2` directory ready for recording the steps for v2's implementation.  Can you also
 rename `CodeReviewsAfterPhase3.md` to `CodeReviewsAfterV1Phase3.md`
-`
+```
 
 The files are all moved around
 
@@ -415,3 +415,42 @@ tasks you have already done, do the next as-yet-uncompleted phase of the plan.
 ```
 
 This completes the plan and all items are ticked off in the TODO list (apart from the manual smoke test).
+
+```
+Can you write down all of the steps you have followed for the v2 implementation phase 9 into the file
+docs/plans/v2/Phase9Steps.md
+```
+
+Done
+
+### V2 Design review 
+
+A new context was started, the application run and a design review was undertaken.
+
+```
+I have now reviewed the app and it works!  However now that I have reviewed it I have noted down some
+comments and tasks in the file `docs/plans/v2/DesignReviewAfterPhase9.md`.  Don't worry about the
+general comments, but can you action the next review task that hasn't already been addressed (i.e. without
+a cross next to it).  Then when you are finished modify the review doc so there is a cross next to the
+point you have completed.  Then stop - ONLY DO ONE REVIEW POINT.  If there is any uncertainty as what to
+do then feel free to ask, otherwise crack on.
+```
+
+There were 3 tasks.  Each one of them was completed by just running the above prompt (i.e. 3 times in total).
+
+Then there was one final comment because I had made a small mistake in the review:
+
+```
+That's great!  However I made a mistake in the specification for the last task.  The tweak that is needed is
+that for the `tool_result` message type, the id of the tool call is actually recorded with the property
+`tool_use_id` not `id`.  Can you adjust this.
+```
+
+This was completed.
+
+```
+Thanks.  Can you you write up all the steps taken to action the review comments into the doc
+docs/plans/v2/Phase9PostDesignReviewSteps.md
+```
+
+Done
