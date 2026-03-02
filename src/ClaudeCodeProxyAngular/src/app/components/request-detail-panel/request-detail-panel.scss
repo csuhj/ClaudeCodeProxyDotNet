@@ -242,6 +242,71 @@
     background: #1f1b3d;
     .message-role { color: var(--color-accent); background: rgba(124, 110, 240, 0.1); }
   }
+
+  &.message-thinking {
+    background: #161d26;
+    .message-role { color: #7ecfd4; background: rgba(126, 207, 212, 0.1); }
+  }
+
+  &.message-tool-use {
+    background: #22200f;
+    .message-role { color: #f9c74f; background: rgba(249, 199, 79, 0.1); }
+  }
+
+  &.message-tool-result {
+    background: #152015;
+    .message-role { color: #90be6d; background: rgba(144, 190, 109, 0.1); }
+  }
+}
+
+/* ── Inline content blocks (thinking / tool_use / tool_result in messages) ── */
+
+.content-block {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+}
+
+.block-type-label {
+  padding: 0.2rem 0.65rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.block-body {
+  padding: 0.55rem 0.65rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.block-thinking .block-type-label { color: #7ecfd4; }
+.block-tool-use .block-type-label  { color: #f9c74f; }
+.block-tool-result .block-type-label { color: #90be6d; }
+
+.tool-meta-row {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  b { color: var(--color-text); margin-right: 0.25rem; }
+  span + span { margin-left: 1rem; }
+}
+
+.tool-input {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 1rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.8rem;
+  border-top: 1px solid var(--color-border);
+
+  dt { color: var(--color-text-muted); font-weight: 500; white-space: nowrap; }
+  dd { color: var(--color-text); white-space: pre-wrap; word-break: break-all; }
 }
 
 /* ── Tools list ───────────────────────────────────────────────────────────── */

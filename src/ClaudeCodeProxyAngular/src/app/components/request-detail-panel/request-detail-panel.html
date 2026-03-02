@@ -85,7 +85,40 @@
               @for (msg of parsed.messages; track $index) {
                 <details [class]="'message message-' + msg.role" open>
                   <summary class="message-role">{{ msg.role }}</summary>
-                  <div class="message-content">{{ getMessageText(msg.content) }}</div>
+                  <div class="message-content">
+                    @for (block of getContentBlocks(msg.content); track $index) {
+                      @if (block.type === 'text') {
+                        <div>{{ block.text }}</div>
+                      } @else if (block.type === 'thinking') {
+                        <div class="content-block block-thinking">
+                          <div class="block-type-label">thinking</div>
+                          <div class="block-body">{{ block.thinking }}</div>
+                        </div>
+                      } @else if (block.type === 'tool_use') {
+                        <div class="content-block block-tool-use">
+                          <div class="block-type-label">tool_use</div>
+                          <div class="tool-meta-row">
+                            <span><b>id</b>{{ block.id }}</span>
+                            <span><b>name</b>{{ block.name }}</span>
+                          </div>
+                          @if (block.input) {
+                            <dl class="tool-input">
+                              @for (entry of getInputEntries(block.input); track entry[0]) {
+                                <dt>{{ entry[0] }}</dt>
+                                <dd>{{ entry[1] }}</dd>
+                              }
+                            </dl>
+                          }
+                        </div>
+                      } @else if (block.type === 'tool_result') {
+                        <div class="content-block block-tool-result">
+                          <div class="block-type-label">tool_result</div>
+                          <div class="tool-meta-row"><span><b>id</b>{{ block.id }}</span></div>
+                          <div class="block-body">{{ getToolResultText(block.content) }}</div>
+                        </div>
+                      }
+                    }
+                  </div>
                 </details>
               }
             </div>
@@ -140,6 +173,12 @@
                 <span class="param"><b>out</b> {{ streamed.outputTokens }}</span>
               }
             </div>
+            @if (streamed.thinkingText) {
+              <details class="message message-thinking" open>
+                <summary class="message-role">thinking</summary>
+                <div class="message-content">{{ streamed.thinkingText }}</div>
+              </details>
+            }
             <details class="message message-assistant" open>
               <summary class="message-role">assistant</summary>
               <div class="message-content">{{ streamed.assistantText || '(no text content)' }}</div>
@@ -165,6 +204,34 @@
                 <details class="message message-assistant" open>
                   <summary class="message-role">assistant</summary>
                   <div class="message-content">{{ block.text }}</div>
+                </details>
+              } @else if (block.type === 'thinking') {
+                <details class="message message-thinking" open>
+                  <summary class="message-role">thinking</summary>
+                  <div class="message-content">{{ block.thinking }}</div>
+                </details>
+              } @else if (block.type === 'tool_use') {
+                <details class="message message-tool-use" open>
+                  <summary class="message-role">tool_use · {{ block.name }}</summary>
+                  <div class="message-content">
+                    <div class="tool-meta-row"><span><b>id</b>{{ block.id }}</span></div>
+                    @if (block.input) {
+                      <dl class="tool-input">
+                        @for (entry of getInputEntries(block.input); track entry[0]) {
+                          <dt>{{ entry[0] }}</dt>
+                          <dd>{{ entry[1] }}</dd>
+                        }
+                      </dl>
+                    }
+                  </div>
+                </details>
+              } @else if (block.type === 'tool_result') {
+                <details class="message message-tool-result" open>
+                  <summary class="message-role">tool_result</summary>
+                  <div class="message-content">
+                    <div class="tool-meta-row"><span><b>id</b>{{ block.id }}</span></div>
+                    <div>{{ getToolResultText(block.content) }}</div>
+                  </div>
                 </details>
               }
             }

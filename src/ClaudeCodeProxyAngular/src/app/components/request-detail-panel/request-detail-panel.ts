@@ -15,6 +15,11 @@ import { RequestsService, LlmRequestDetail } from '../../services/requests.servi
 interface ContentBlock {
   type: string;
   text?: string;
+  thinking?: string;
+  id?: string;
+  name?: string;
+  input?: Record<string, unknown>;
+  content?: string | ContentBlock[];
 }
 
 interface AnthropicMessage {
@@ -45,6 +50,7 @@ interface AnthropicResponseBody {
 interface StreamingView {
   model?: string;
   assistantText: string;
+  thinkingText?: string;
   inputTokens?: number;
   outputTokens?: number;
   stopReason?: string;
@@ -137,6 +143,7 @@ export class RequestDetailPanel implements OnChanges {
       .filter(Boolean);
 
     let assistantText = '';
+    let thinkingText = '';
     let inputTokens: number | undefined;
     let outputTokens: number | undefined;
     let stopReason: string | undefined;
@@ -148,13 +155,15 @@ export class RequestDetailPanel implements OnChanges {
         inputTokens = event.message?.usage?.input_tokens;
       } else if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
         assistantText += event.delta.text ?? '';
+      } else if (event.type === 'content_block_delta' && event.delta?.type === 'thinking_delta') {
+        thinkingText += event.delta.thinking ?? '';
       } else if (event.type === 'message_delta') {
         outputTokens = event.usage?.output_tokens;
         stopReason = event.delta?.stop_reason;
       }
     }
 
-    return { model, assistantText, inputTokens, outputTokens, stopReason };
+    return { model, assistantText, thinkingText: thinkingText || undefined, inputTokens, outputTokens, stopReason };
   }
 
   private parseHeaders(headers: string): [string, string][] {
@@ -174,6 +183,21 @@ export class RequestDetailPanel implements OnChanges {
   }
 
   getMessageText(content: string | ContentBlock[]): string {
+    if (typeof content === 'string') return content;
+    return content.filter(b => b.type === 'text').map(b => b.text ?? '').join('');
+  }
+
+  getContentBlocks(content: string | ContentBlock[]): ContentBlock[] {
+    if (typeof content === 'string') return [{ type: 'text', text: content }];
+    return content;
+  }
+
+  getInputEntries(input: Record<string, unknown>): [string, string][] {
+    return Object.entries(input).map(([k, v]) => [k, typeof v === 'string' ? v : JSON.stringify(v, null, 2)]);
+  }
+
+  getToolResultText(content: string | ContentBlock[] | undefined): string {
+    if (!content) return '';
     if (typeof content === 'string') return content;
     return content.filter(b => b.type === 'text').map(b => b.text ?? '').join('');
   }
