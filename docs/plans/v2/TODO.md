@@ -2,8 +2,8 @@
 
 ## Phase 1: Backend — Data Transfer Objects
 
-- [ ] **Task 1.1** — Create `LlmRequestSummary` DTO (`src/ClaudeCodeProxy/Models/LlmRequestSummary.cs`) with fields: `Id`, `Timestamp`, `Method`, `Path`, `ResponseStatusCode`, `DurationMs`, `Model`, `InputTokens`, `OutputTokens`, `CacheReadTokens`, `CacheCreationTokens`
-- [ ] **Task 1.2** — Create `LlmRequestDetail` DTO (`src/ClaudeCodeProxy/Models/LlmRequestDetail.cs`) extending `LlmRequestSummary` with: `RequestHeaders`, `RequestBody`, `ResponseHeaders`, `ResponseBody`, `IsStreaming`
+- [x] **Task 1.1** — Create `LlmRequestSummary` DTO (`src/ClaudeCodeProxy/Models/LlmRequestSummary.cs`) with fields: `Id`, `Timestamp`, `Method`, `Path`, `ResponseStatusCode`, `DurationMs`, `Model`, `InputTokens`, `OutputTokens`, `CacheReadTokens`, `CacheCreationTokens`
+- [x] **Task 1.2** — Create `LlmRequestDetail` DTO (`src/ClaudeCodeProxy/Models/LlmRequestDetail.cs`) extending `LlmRequestSummary` with: `RequestHeaders`, `RequestBody`, `ResponseHeaders`, `ResponseBody`, `IsStreaming`
 
 ## Phase 2: Backend — Repository Extension
 
