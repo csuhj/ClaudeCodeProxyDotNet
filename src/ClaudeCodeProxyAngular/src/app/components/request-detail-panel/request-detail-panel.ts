@@ -188,4 +188,10 @@ export class RequestDetailPanel implements OnChanges {
     if (ms < 1000) return `${ms}ms`;
     return `${(ms / 1000).toFixed(1)}s`;
   }
+
+  onOverlayClick(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.closed.emit();
+    }
+  }
 }
