@@ -17,6 +17,7 @@ interface ContentBlock {
   text?: string;
   thinking?: string;
   id?: string;
+  tool_use_id?: string;
   name?: string;
   input?: Record<string, unknown>;
   content?: string | ContentBlock[];
