@@ -1,0 +1,42 @@
+<section class="stats-section">
+  <h2>LLM Requests <span class="subtitle">(last 24 hours)</span></h2>
+
+  @if (loading()) {
+    <div class="state-message loading">Loading...</div>
+  } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+  } @else if (data().length === 0) {
+    <div class="state-message empty">No LLM requests in the last 24 hours.</div>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Time (UTC)</th>
+            <th>Model</th>
+            <th>Path</th>
+            <th class="num">Status</th>
+            <th class="num">Duration</th>
+            <th class="num">Input Tokens</th>
+            <th class="num">Output Tokens</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (req of data(); track req.id) {
+            <tr class="clickable" (click)="requestSelected.emit(req.id)">
+              <td>{{ req.timestamp | date:'dd MMM HH:mm:ss':'UTC' }}</td>
+              <td>{{ req.model ?? '—' }}</td>
+              <td class="path-cell">{{ truncatePath(req.path) }}</td>
+              <td class="num">
+                <span [class]="statusClass(req.responseStatusCode)">{{ req.responseStatusCode }}</span>
+              </td>
+              <td class="num">{{ formatDuration(req.durationMs) }}</td>
+              <td class="num">{{ req.inputTokens !== null ? req.inputTokens : '—' }}</td>
+              <td class="num">{{ req.outputTokens !== null ? req.outputTokens : '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -49,12 +49,12 @@
 
 ## Phase 7: Frontend — Request List Component
 
-- [ ] **Task 7.1** — Create `LlmRequestsListComponent` (`src/app/components/llm-requests-list/`):
-  - [ ] Fetches last 24 hours of LLM requests on `ngOnInit` using signals for `data`, `loading`, `error`
-  - [ ] Renders table with columns: Time (UTC), Model, Path (truncated), Status (colour-coded), Duration, Input Tokens, Output Tokens
-  - [ ] Shows loading indicator, error banner, and empty-state message appropriately
-  - [ ] Emits `requestSelected` output event with the request `id` when a row is clicked
-- [ ] **Task 7.2** — Update `AppComponent` (`app.ts` / `app.html`) to import and include the list component; add `selectedRequestId` signal; position the list prominently at the top of the page content (above hourly/daily stats)
+- [x] **Task 7.1** — Create `LlmRequestsListComponent` (`src/app/components/llm-requests-list/`):
+  - [x] Fetches last 24 hours of LLM requests on `ngOnInit` using signals for `data`, `loading`, `error`
+  - [x] Renders table with columns: Time (UTC), Model, Path (truncated), Status (colour-coded), Duration, Input Tokens, Output Tokens
+  - [x] Shows loading indicator, error banner, and empty-state message appropriately
+  - [x] Emits `requestSelected` output event with the request `id` when a row is clicked
+- [x] **Task 7.2** — Update `AppComponent` (`app.ts` / `app.html`) to import and include the list component; add `selectedRequestId` signal; position the list prominently at the top of the page content (above hourly/daily stats)
 
 ## Phase 8: Frontend — Request Detail Panel Component
 

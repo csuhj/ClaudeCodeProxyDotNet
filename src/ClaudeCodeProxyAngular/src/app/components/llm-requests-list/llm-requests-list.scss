@@ -1,0 +1,20 @@
+.clickable {
+  cursor: pointer;
+}
+
+.status-ok {
+  color: #4caf82;
+}
+
+.status-err {
+  color: var(--color-error);
+}
+
+.path-cell {
+  font-family: monospace;
+  font-size: 0.8rem;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

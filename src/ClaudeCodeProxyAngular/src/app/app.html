@@ -9,6 +9,7 @@
 </header>
 
 <main class="app-main">
+  <app-llm-requests-list (requestSelected)="selectedRequestId.set($event)" />
   <app-hourly-stats />
   <app-daily-stats />
 </main>
