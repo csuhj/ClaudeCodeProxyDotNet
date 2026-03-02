@@ -18,10 +18,10 @@
 
 ## Phase 4: Backend — Controller
 
-- [ ] **Task 4.1** — Create `RequestsController` (`src/ClaudeCodeProxy/Controllers/RequestsController.cs`) with two endpoints:
+- [x] **Task 4.1** — Create `RequestsController` (`src/ClaudeCodeProxy/Controllers/RequestsController.cs`) with two endpoints:
   - `GET /api/requests` — list LLM requests, defaults to last 24 hours, supports `from`/`to`/`page`/`pageSize` query params, returns `List<LlmRequestSummary>`
   - `GET /api/requests/{id}` — returns `LlmRequestDetail` or 404
-- [ ] **Task 4.2** — Register `IRequestsService` / `RequestsService` as scoped in `Program.cs`
+- [x] **Task 4.2** — Register `IRequestsService` / `RequestsService` as scoped in `Program.cs`
 
 ## Phase 5: Backend — Tests
 
