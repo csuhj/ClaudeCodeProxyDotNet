@@ -44,8 +44,8 @@
 
 ## Phase 6: Frontend — Angular Service
 
-- [ ] **Task 6.1** — Define TypeScript interfaces in `src/app/services/requests.service.ts`: `LlmRequestSummary` and `LlmRequestDetail` (extending summary with body/header/isStreaming fields)
-- [ ] **Task 6.2** — Create injectable `RequestsService` with `getRecent(from?, to?, page?, pageSize?)` and `getDetail(id)` methods using `HttpClient`
+- [x] **Task 6.1** — Define TypeScript interfaces in `src/app/services/requests.service.ts`: `LlmRequestSummary` and `LlmRequestDetail` (extending summary with body/header/isStreaming fields)
+- [x] **Task 6.2** — Create injectable `RequestsService` with `getRecent(from?, to?, page?, pageSize?)` and `getDetail(id)` methods using `HttpClient`
 
 ## Phase 7: Frontend — Request List Component
 
