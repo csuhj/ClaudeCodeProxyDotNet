@@ -1,5 +1,7 @@
 # Claude Code Proxy using .Net
 
+![Proxy dashboard screenshot](./docs/DashboardScreenshot.png?raw=true)
+
 This project is both a working reverse-proxy for use with Claude Code, so that prompts can be sniffed and inspected and also an example of building an application from scratch using Claude Code.  It is built with .Net 10.
 
 - See [PromptsToCreateApplication.md](./docs/PromptsToCreateApplication.md) for the starting point and prompts used to build the application.
