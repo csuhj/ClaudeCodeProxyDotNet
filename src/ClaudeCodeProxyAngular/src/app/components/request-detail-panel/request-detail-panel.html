@@ -1,0 +1,200 @@
+<div class="detail-panel">
+
+  <div class="panel-header">
+    <h2>Request Detail</h2>
+    <button class="close-btn" (click)="closed.emit()">✕ Close</button>
+  </div>
+
+  @if (loading()) {
+    <div class="state-message loading">Loading...</div>
+  } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+  } @else if (detail(); as d) {
+
+    <!-- Section 1: Metadata -->
+    <section class="panel-section metadata-section">
+      <div class="meta-grid">
+        <span class="meta-label">Time</span>
+        <span>{{ d.timestamp | date:'dd MMM yyyy HH:mm:ss':'UTC' }} UTC</span>
+
+        <span class="meta-label">Request</span>
+        <code class="method-path">{{ d.method }} {{ d.path }}</code>
+
+        <span class="meta-label">Status</span>
+        <span [class]="statusClass(d.responseStatusCode)">{{ d.responseStatusCode }}</span>
+
+        <span class="meta-label">Duration</span>
+        <span>{{ formatDuration(d.durationMs) }}</span>
+
+        @if (d.model) {
+          <span class="meta-label">Model</span>
+          <span>{{ d.model }}</span>
+        }
+
+        @if (d.inputTokens !== null) {
+          <span class="meta-label">Tokens</span>
+          <span class="token-summary">
+            In: {{ d.inputTokens }}
+            / Out: {{ d.outputTokens }}
+            @if (d.cacheReadTokens) { / Cache read: {{ d.cacheReadTokens }} }
+            @if (d.cacheCreationTokens) { / Cache create: {{ d.cacheCreationTokens }} }
+          </span>
+        }
+      </div>
+    </section>
+
+    <!-- Section 2: Request Body -->
+    <section class="panel-section request-section">
+      <div class="section-header">
+        <h3>Request</h3>
+        <button class="toggle-btn" (click)="requestViewRaw.set(!requestViewRaw())">
+          {{ requestViewRaw() ? 'Formatted' : 'Raw' }}
+        </button>
+      </div>
+
+      @if (d.requestBody === null) {
+        <p class="no-data">No request body.</p>
+      } @else if (requestViewRaw()) {
+        <pre class="raw-view">{{ rawRequestBody() }}</pre>
+      } @else if (parsedRequestBody(); as parsed) {
+        <div class="formatted-view">
+          @if (parsed.model || parsed.max_tokens !== undefined || parsed.temperature !== undefined) {
+            <div class="param-row">
+              @if (parsed.model) {
+                <span class="param"><b>model</b> {{ parsed.model }}</span>
+              }
+              @if (parsed.max_tokens !== undefined) {
+                <span class="param"><b>max_tokens</b> {{ parsed.max_tokens }}</span>
+              }
+              @if (parsed.temperature !== undefined) {
+                <span class="param"><b>temperature</b> {{ parsed.temperature }}</span>
+              }
+            </div>
+          }
+
+          @if (getSystemText(parsed.system); as sysText) {
+            <div class="system-block">
+              <div class="block-label">System</div>
+              <div class="block-content">{{ sysText }}</div>
+            </div>
+          }
+
+          @if (parsed.messages && parsed.messages.length > 0) {
+            <div class="messages">
+              @for (msg of parsed.messages; track $index) {
+                <div [class]="'message message-' + msg.role">
+                  <div class="message-role">{{ msg.role }}</div>
+                  <div class="message-content">{{ getMessageText(msg.content) }}</div>
+                </div>
+              }
+            </div>
+          }
+
+          @if (parsed.tools && parsed.tools.length > 0) {
+            <details class="tools-list">
+              <summary>Tools ({{ parsed.tools.length }})</summary>
+              <div class="tools-items">
+                @for (tool of parsed.tools; track tool.name) {
+                  <div class="tool-item">
+                    <strong>{{ tool.name }}</strong>
+                    @if (tool.description) { — {{ tool.description }} }
+                  </div>
+                }
+              </div>
+            </details>
+          }
+        </div>
+      } @else {
+        <pre class="raw-view">{{ d.requestBody }}</pre>
+      }
+    </section>
+
+    <!-- Section 3: Response Body -->
+    <section class="panel-section response-section">
+      <div class="section-header">
+        <h3>Response</h3>
+        <button class="toggle-btn" (click)="responseViewRaw.set(!responseViewRaw())">
+          {{ responseViewRaw() ? 'Formatted' : 'Raw' }}
+        </button>
+      </div>
+
+      @if (d.responseBody === null) {
+        <p class="no-data">No response body captured.</p>
+      } @else if (responseViewRaw()) {
+        <pre class="raw-view">{{ rawResponseBody() }}</pre>
+      } @else if (d.isStreaming) {
+        @if (parsedStreamingResponse(); as streamed) {
+          <div class="formatted-view">
+            <div class="param-row">
+              @if (streamed.model) {
+                <span class="param"><b>model</b> {{ streamed.model }}</span>
+              }
+              @if (streamed.stopReason) {
+                <span class="param"><b>stop reason</b> {{ streamed.stopReason }}</span>
+              }
+              @if (streamed.inputTokens !== undefined) {
+                <span class="param"><b>in</b> {{ streamed.inputTokens }}</span>
+              }
+              @if (streamed.outputTokens !== undefined) {
+                <span class="param"><b>out</b> {{ streamed.outputTokens }}</span>
+              }
+            </div>
+            <div class="message message-assistant">
+              <div class="message-role">assistant</div>
+              <div class="message-content">{{ streamed.assistantText || '(no text content)' }}</div>
+            </div>
+          </div>
+        } @else {
+          <pre class="raw-view">{{ d.responseBody }}</pre>
+        }
+      } @else if (parsedResponseJson(); as parsedResp) {
+        <div class="formatted-view">
+          <div class="param-row">
+            @if (parsedResp.stop_reason) {
+              <span class="param"><b>stop reason</b> {{ parsedResp.stop_reason }}</span>
+            }
+            @if (parsedResp.usage) {
+              <span class="param"><b>in</b> {{ parsedResp.usage.input_tokens }}</span>
+              <span class="param"><b>out</b> {{ parsedResp.usage.output_tokens }}</span>
+            }
+          </div>
+          @if (parsedResp.content && parsedResp.content.length > 0) {
+            @for (block of parsedResp.content; track $index) {
+              @if (block.type === 'text') {
+                <div class="message message-assistant">
+                  <div class="message-role">assistant</div>
+                  <div class="message-content">{{ block.text }}</div>
+                </div>
+              }
+            }
+          }
+        </div>
+      } @else {
+        <pre class="raw-view">{{ d.responseBody }}</pre>
+      }
+    </section>
+
+    <!-- Section 4: Headers -->
+    <section class="panel-section headers-section">
+      <details>
+        <summary>Request Headers</summary>
+        <dl class="headers-list">
+          @for (entry of requestHeaderEntries(); track entry[0]) {
+            <dt>{{ entry[0] }}</dt>
+            <dd>{{ entry[1] }}</dd>
+          }
+        </dl>
+      </details>
+      <details>
+        <summary>Response Headers</summary>
+        <dl class="headers-list">
+          @for (entry of responseHeaderEntries(); track entry[0]) {
+            <dt>{{ entry[0] }}</dt>
+            <dd>{{ entry[1] }}</dd>
+          }
+        </dl>
+      </details>
+    </section>
+
+  }
+</div>

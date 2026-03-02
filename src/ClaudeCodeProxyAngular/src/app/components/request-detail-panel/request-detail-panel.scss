@@ -1,0 +1,312 @@
+.detail-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ── Sticky panel header ──────────────────────────────────────────────────── */
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-header-bg);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 3.5rem; /* below the app header */
+  z-index: 5;
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+.close-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.3rem 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.1s;
+
+  &:hover {
+    background: var(--color-bg);
+  }
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────────── */
+
+.panel-section {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.metadata-section { background: var(--color-bg); }
+.request-section  { background: #191c29; }
+.response-section { background: #1c1929; }
+.headers-section  { background: var(--color-surface); }
+
+/* ── Section headings + toggle ────────────────────────────────────────────── */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h3 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+}
+
+.toggle-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: 0.2rem 0.65rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: color 0.1s, border-color 0.1s;
+
+  &:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-muted);
+  }
+}
+
+/* ── Metadata grid ────────────────────────────────────────────────────────── */
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem 1.25rem;
+  font-size: 0.875rem;
+
+  .meta-label {
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    align-self: baseline;
+    padding-top: 0.15rem;
+  }
+}
+
+.method-path {
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.status-ok { color: #4caf82; }
+.status-err { color: var(--color-error); }
+
+.token-summary {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+
+  strong { color: var(--color-text); }
+}
+
+/* ── Formatted views ──────────────────────────────────────────────────────── */
+
+.formatted-view {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.param-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  font-size: 0.83rem;
+  color: var(--color-text-muted);
+}
+
+.param {
+  b {
+    color: var(--color-text);
+    margin-right: 0.35rem;
+  }
+}
+
+/* ── System prompt block ──────────────────────────────────────────────────── */
+
+.system-block {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.block-label {
+  background: var(--color-border);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.block-content {
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Message bubbles ──────────────────────────────────────────────────────── */
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.message {
+  border-radius: 8px;
+  overflow: hidden;
+
+  .message-role {
+    padding: 0.22rem 0.75rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .message-content {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  &.message-user {
+    background: #1b2040;
+    .message-role { color: var(--color-accent-alt); background: rgba(90, 156, 245, 0.1); }
+  }
+
+  &.message-assistant {
+    background: #1f1b3d;
+    .message-role { color: var(--color-accent); background: rgba(124, 110, 240, 0.1); }
+  }
+}
+
+/* ── Tools list ───────────────────────────────────────────────────────────── */
+
+.tools-list {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+
+  summary {
+    cursor: pointer;
+    color: var(--color-text-muted);
+    user-select: none;
+    padding: 0.2rem 0;
+    list-style: none;
+
+    &::before { content: '▶ '; font-size: 0.65rem; }
+  }
+
+  &[open] summary::before { content: '▼ '; }
+
+  .tools-items { margin-top: 0.5rem; }
+
+  .tool-item {
+    padding: 0.35rem 0;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 0.83rem;
+
+    strong { color: var(--color-accent-alt); }
+  }
+}
+
+/* ── Raw view ─────────────────────────────────────────────────────────────── */
+
+.raw-view {
+  background: #090b10;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 1rem;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre;
+  color: #a8b4c8;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* ── No-data message ──────────────────────────────────────────────────────── */
+
+.no-data {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* ── Headers section ──────────────────────────────────────────────────────── */
+
+.headers-section {
+  details {
+    margin-bottom: 0.5rem;
+    &:last-child { margin-bottom: 0; }
+  }
+
+  summary {
+    cursor: pointer;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    padding: 0.4rem 0;
+    user-select: none;
+    list-style: none;
+
+    &::before { content: '▶ '; font-size: 0.65rem; }
+  }
+
+  details[open] summary::before { content: '▼ '; }
+
+  .headers-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 1rem;
+    padding: 0.65rem 0 0.25rem;
+    font-size: 0.8rem;
+
+    dt {
+      color: var(--color-text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    dd {
+      color: var(--color-text);
+      word-break: break-all;
+    }
+  }
+}

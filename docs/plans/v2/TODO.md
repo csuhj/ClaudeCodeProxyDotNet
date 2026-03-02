@@ -58,14 +58,14 @@
 
 ## Phase 8: Frontend — Request Detail Panel Component
 
-- [ ] **Task 8.1** — Create `RequestDetailPanelComponent` (`src/app/components/request-detail-panel/`):
-  - [ ] Accepts `requestId` input; fetches detail on input change; emits `closed` output
-  - [ ] **Section 1 — Metadata**: renders timestamp, method + path, status code (colour-coded), duration, model, token counts
-  - [ ] **Section 2 — Request body**: formatted view (system prompt block, conversation message bubbles per role, collapsible tools list) and raw JSON view, togglable; handles null/invalid body gracefully
-  - [ ] **Section 3 — Response body (non-streaming)**: formatted view (stop reason, token summary, content blocks) and raw JSON view, togglable
-  - [ ] **Section 3 — Response body (streaming)**: formatted view (reconstructed assistant text from `text_delta` SSE events, token summary from `message_delta`) and raw SSE view, togglable
-  - [ ] **Section 4 — Headers**: two native `<details>`/`<summary>` collapsible sections for request and response headers, collapsed by default
-- [ ] **Task 8.2** — Style `request-detail-panel.scss`: distinct background per section, chat-bubble styling for user/assistant messages, monospace dark `<pre>` blocks for raw views, scrollable panel, sticky close button
+- [x] **Task 8.1** — Create `RequestDetailPanelComponent` (`src/app/components/request-detail-panel/`):
+  - [x] Accepts `requestId` input; fetches detail on input change; emits `closed` output
+  - [x] **Section 1 — Metadata**: renders timestamp, method + path, status code (colour-coded), duration, model, token counts
+  - [x] **Section 2 — Request body**: formatted view (system prompt block, conversation message bubbles per role, collapsible tools list) and raw JSON view, togglable; handles null/invalid body gracefully
+  - [x] **Section 3 — Response body (non-streaming)**: formatted view (stop reason, token summary, content blocks) and raw JSON view, togglable
+  - [x] **Section 3 — Response body (streaming)**: formatted view (reconstructed assistant text from `text_delta` SSE events, token summary from `message_delta`) and raw SSE view, togglable
+  - [x] **Section 4 — Headers**: two native `<details>`/`<summary>` collapsible sections for request and response headers, collapsed by default
+- [x] **Task 8.2** — Style `request-detail-panel.scss`: distinct background per section, chat-bubble styling for user/assistant messages, monospace dark `<pre>` blocks for raw views, scrollable panel, sticky close button
 
 ## Phase 9: Integration
 
