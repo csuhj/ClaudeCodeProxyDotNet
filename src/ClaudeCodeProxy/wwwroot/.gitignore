@@ -1,5 +1,0 @@
-# This directory is populated by `npm run build` from src/ClaudeCodeProxyAngular/.
-# Build artefacts must not be committed — they are generated on demand.
-*
-!.gitignore
-!.gitkeep
