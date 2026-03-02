@@ -12,7 +12,7 @@ I haven't hand-edited any of the code or project files, etc.  The only changes I
 
 ## Prompts
 
-### Initial planning
+### Initial planning for Version 1
 ```
 There is an "InitialRequirements.md" file in the docs directory.  Can you examine the "Initial Requirements for Version 1"
 section and plan out a detailed set of tasks to complete to meet these objectives.  Can you then write these tasks out
@@ -29,7 +29,7 @@ Can you update the plan in phase 1 to use .Net 10
 
 Claude then made the appropriate change to the plan.
 
-### Phase 1
+### V1 Phase 1
 
 ```
 ok thanks - can you now implement phase 1 of the plan.  Don't move on to any further phases at the moment - just phase 1
@@ -59,7 +59,7 @@ Can you write down all of the steps you have followed so far into the file docs/
 It created the [Phase1Steps.md](./plans/Phase1Steps.md) file - documenting the steps it had taken so far, based on the
 conversation history.
 
-### Phase 2
+### V1 Phase 2
 
 ```
 Can you now implement phase 2 of the plan.  Again, don't move on to any further phases at the moment - just phase 2 and
@@ -80,7 +80,7 @@ It created the tests using the suggested library and wrote [Phase2ExtraSteps.md]
 
 Claude's context was getting full (to 78%) so I created a new conversation and continued with the following.
 
-### Phase 3
+### V1 Phase 3
 
 ```
 You are running through the implementation plan in docs/ImplementationPlan-v1.md.  You've already completed Phase 1 and
@@ -157,7 +157,7 @@ Can you write down all of the steps you have followed so far and append them to 
 
 The document was updated - the code review has been completed.
 
-### Phase 4
+### V1 Phase 4
 
 ```
 You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already completed Phase 1,
@@ -207,7 +207,7 @@ Can you write down a file in the docs/plans dir called Phase4AfterTestingSteps.m
 followed to fix the issue above.
 ```
 
-### Phase 5
+### V1 Phase 5
 
 I started a new context:
 
@@ -234,7 +234,7 @@ Can you also add a new End to End test to cover resposnes having a gzip content 
 Can you write up the last 2 steps into a Phase5ExtraSteps.md file
 ```
 
-### Phase 6
+### V1 Phase 6
 
 I started a new context:
 
@@ -254,7 +254,7 @@ Then you can add what you had to do to a new Phase5ExtraSteps doc
 
 It then completed this work.
 
-### Phase 7
+### V1 Phase 7
 
 ```
 You are running through the implementation plan in docs/plans/ImplementationPlan-v1.md.  You've already
@@ -349,3 +349,69 @@ Can you update the Phase7ExtraSteps document to include these steps
 ```
 
 Does it
+
+### Initial planning for Version 2
+
+Then create a new FurtherRequirements doc to plan for an addition for version 2.
+
+```
+There is a "FurtherRequirements.md" file in the docs directory that describes how to extend the
+application built using the plan in docs/plans/ImplementationPlan-v1.md (derived from the
+docs/InitialRequirements.md file).  Can you examine the "Further Requirements for Version 2"
+section in the FurtherRequirements doc and plan out a detailed set of tasks to complete to meet
+these objectives.  Can you then write these tasks out into the file "ImplementationPlan-v2.md"
+in the docs/plans directory
+```
+
+The plan is built
+
+```
+Can you create a directory in docs/plans called `v1` and move all the XXXSteps.md files into it,
+then create a `v2` directory ready for recording the steps for v2's implementation.  Can you also
+rename `CodeReviewsAfterPhase3.md` to `CodeReviewsAfterV1Phase3.md`
+`
+
+The files are all moved around
+
+```
+Can you then create a bullet TODO list that you will be able to work through all the different phases
+in the v2 implementation plan.  Create this in docs/plans/v2.  At the moment none of the items are
+complete
+```
+
+The TODO list is created.  Then start a new context and run through the plan it:
+
+```
+Run through `docs/plans/ImplementationPlan-v2.md` and using `docs/plans/v2/TODO.md` to understand what
+tasks you have already done, do the next as-yet-uncompleted phase of the plan.
+```
+
+This same prompt is run multiple times for phases 1, 2, 3, 4 & 5 until the context is getting quite full
+
+```
+Can you write down all of the steps you have followed for the v2 implementation phases 1 to 5 into the
+file docs/plans/v2/Phase1to5Steps.md
+```
+
+This is written down.  Then a new context is started.  The same prompt as before is run through again:
+
+```
+Run through `docs/plans/ImplementationPlan-v2.md` and using `docs/plans/v2/TODO.md` to understand what
+tasks you have already done, do the next as-yet-uncompleted phase of the plan.
+```
+
+This is run through for phases 6, 7, & 8 and again the context is getting full.  
+
+```
+Can you write down all of the steps you have followed for the v2 implementation phases 6 to 8 into the
+file docs/plans/v2/Phase6to8Steps.md
+```
+
+This is written down.  Then a new context is started and the same prompt as before is run through for the last time:
+
+```
+Run through `docs/plans/ImplementationPlan-v2.md` and using `docs/plans/v2/TODO.md` to understand what
+tasks you have already done, do the next as-yet-uncompleted phase of the plan.
+```
+
+This completes the plan and all items are ticked off in the TODO list (apart from the manual smoke test).

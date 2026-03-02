@@ -69,5 +69,5 @@
 
 ## Phase 9: Integration
 
-- [ ] **Task 9.1** — Wire `AppComponent` state: add `onRequestSelected(id)` and `onDetailClosed()` handlers; conditionally render `RequestDetailPanelComponent` when `selectedRequestId` is non-null
+- [x] **Task 9.1** — Wire `AppComponent` state: add `onRequestSelected(id)` and `onDetailClosed()` handlers; conditionally render `RequestDetailPanelComponent` when `selectedRequestId` is non-null
 - [ ] **Task 9.2** — End-to-end smoke test: run proxy, generate LLM traffic, confirm list appears, confirm detail panel opens on row click, confirm formatted and raw views work for both streaming and non-streaming requests, confirm close button works

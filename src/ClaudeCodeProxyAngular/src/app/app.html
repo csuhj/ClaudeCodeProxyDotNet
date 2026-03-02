@@ -9,7 +9,14 @@
 </header>
 
 <main class="app-main">
-  <app-llm-requests-list (requestSelected)="selectedRequestId.set($event)" />
+  <app-llm-requests-list (requestSelected)="onRequestSelected($event)" />
+
+  @if (selectedRequestId() !== null) {
+    <app-request-detail-panel
+      [requestId]="selectedRequestId()!"
+      (closed)="onDetailClosed()" />
+  }
+
   <app-hourly-stats />
   <app-daily-stats />
 </main>
