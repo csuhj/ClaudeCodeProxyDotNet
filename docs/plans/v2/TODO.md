@@ -25,22 +25,22 @@
 
 ## Phase 5: Backend — Tests
 
-- [ ] **Task 5.1** — Repository tests for `GetLlmRequestsAsync`:
-  - [ ] Returns only requests that have an associated `LlmUsage` record
-  - [ ] Respects the `[from, to)` time window
-  - [ ] Returns results ordered newest-first
-  - [ ] Pagination (`skip`/`take`) returns the correct page of results
-- [ ] **Task 5.1 (cont.)** — Repository tests for `GetLlmRequestByIdAsync`:
-  - [ ] Returns `null` for an unknown id
-  - [ ] Returns all fields (including body and headers) for a known id
-  - [ ] Sets `IsStreaming = true` when `ResponseHeaders` contains `text/event-stream`
-  - [ ] Sets `IsStreaming = false` when `ResponseHeaders` contains `application/json`
-- [ ] **Task 5.2** — Service tests for `RequestsService`:
-  - [ ] `pageSize` is clamped to 200 when a larger value is passed
-- [ ] **Task 5.3** — Controller tests for `RequestsController`:
-  - [ ] `GET /api/requests` returns HTTP 200 with an empty array when no data exists
-  - [ ] `GET /api/requests/{id}` returns HTTP 404 for an unknown id
-  - [ ] `GET /api/requests/{id}` returns HTTP 200 with correct DTO fields for a known id
+- [x] **Task 5.1** — Repository tests for `GetLlmRequestsAsync`:
+  - [x] Returns only requests that have an associated `LlmUsage` record
+  - [x] Respects the `[from, to)` time window
+  - [x] Returns results ordered newest-first
+  - [x] Pagination (`skip`/`take`) returns the correct page of results
+- [x] **Task 5.1 (cont.)** — Repository tests for `GetLlmRequestByIdAsync`:
+  - [x] Returns `null` for an unknown id
+  - [x] Returns all fields (including body and headers) for a known id
+  - [x] Sets `IsStreaming = true` when `ResponseHeaders` contains `text/event-stream`
+  - [x] Sets `IsStreaming = false` when `ResponseHeaders` contains `application/json`
+- [x] **Task 5.2** — Service tests for `RequestsService`:
+  - [x] `pageSize` is clamped to 200 when a larger value is passed
+- [x] **Task 5.3** — Controller tests for `RequestsController`:
+  - [x] `GET /api/requests` returns HTTP 200 with an empty array when no data exists
+  - [x] `GET /api/requests/{id}` returns HTTP 404 for an unknown id
+  - [x] `GET /api/requests/{id}` returns HTTP 200 with correct DTO fields for a known id
 
 ## Phase 6: Frontend — Angular Service
 
