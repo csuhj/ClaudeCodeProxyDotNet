@@ -17,4 +17,19 @@ public interface IRecordingRepository
     /// </summary>
     Task<List<StatsProjection>> GetStatsProjectionsAsync(
         DateTime from, DateTime to, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns a paginated list of LLM requests (those with an associated
+    /// <see cref="LlmUsage"/> record) whose timestamp falls in
+    /// [<paramref name="from"/>, <paramref name="to"/>), ordered newest-first.
+    /// Body content is excluded; use <see cref="GetLlmRequestByIdAsync"/> for that.
+    /// </summary>
+    Task<List<LlmRequestSummary>> GetLlmRequestsAsync(
+        DateTime from, DateTime to, int skip, int take, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the full detail for a single request by <paramref name="id"/>,
+    /// or <c>null</c> if no matching record exists.
+    /// </summary>
+    Task<LlmRequestDetail?> GetLlmRequestByIdAsync(long id, CancellationToken ct = default);
 }

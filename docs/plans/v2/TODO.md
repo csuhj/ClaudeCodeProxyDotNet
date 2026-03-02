@@ -7,9 +7,9 @@
 
 ## Phase 2: Backend — Repository Extension
 
-- [ ] **Task 2.1** — Add `GetLlmRequestsAsync(DateTime from, DateTime to, int skip, int take, CancellationToken ct)` to `IRecordingRepository` — filters to LLM-only requests in time window, ordered newest-first, paginated, projected to `LlmRequestSummary`
-- [ ] **Task 2.2** — Add `GetLlmRequestByIdAsync(long id, CancellationToken ct)` to `IRecordingRepository` — returns `LlmRequestDetail?`, derives `IsStreaming` from stored `ResponseHeaders` JSON
-- [ ] **Task 2.3** — Implement both new methods in `RecordingRepository` using EF Core LINQ projections; derive `IsStreaming` via `System.Text.Json` check on `Content-Type` header value
+- [x] **Task 2.1** — Add `GetLlmRequestsAsync(DateTime from, DateTime to, int skip, int take, CancellationToken ct)` to `IRecordingRepository` — filters to LLM-only requests in time window, ordered newest-first, paginated, projected to `LlmRequestSummary`
+- [x] **Task 2.2** — Add `GetLlmRequestByIdAsync(long id, CancellationToken ct)` to `IRecordingRepository` — returns `LlmRequestDetail?`, derives `IsStreaming` from stored `ResponseHeaders` JSON
+- [x] **Task 2.3** — Implement both new methods in `RecordingRepository` using EF Core LINQ projections; derive `IsStreaming` via `System.Text.Json` check on `Content-Type` header value
 
 ## Phase 3: Backend — Service
 
