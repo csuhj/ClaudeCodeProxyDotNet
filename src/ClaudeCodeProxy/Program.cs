@@ -32,6 +32,7 @@ builder.Services.AddSingleton<IRecordingService, RecordingService>();
 
 // ── Stats service & controllers ───────────────────────────────────────────────
 builder.Services.AddScoped<IStatsService, StatsService>();
+builder.Services.AddScoped<IRequestsService, RequestsService>();
 builder.Services.AddControllers();
 
 // ── CORS ──────────────────────────────────────────────────────────────────────

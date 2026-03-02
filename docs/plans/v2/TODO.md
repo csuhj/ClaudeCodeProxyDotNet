@@ -13,8 +13,8 @@
 
 ## Phase 3: Backend — Service
 
-- [ ] **Task 3.1** — Create `IRequestsService` interface (`src/ClaudeCodeProxy/Services/IRequestsService.cs`) with `GetRecentLlmRequestsAsync` and `GetLlmRequestDetailAsync` methods
-- [ ] **Task 3.2** — Create `RequestsService` implementation (`src/ClaudeCodeProxy/Services/RequestsService.cs`): clamps `pageSize` to max 200, calculates `skip`, delegates to repository; register as scoped in `Program.cs`
+- [x] **Task 3.1** — Create `IRequestsService` interface (`src/ClaudeCodeProxy/Services/IRequestsService.cs`) with `GetRecentLlmRequestsAsync` and `GetLlmRequestDetailAsync` methods
+- [x] **Task 3.2** — Create `RequestsService` implementation (`src/ClaudeCodeProxy/Services/RequestsService.cs`): clamps `pageSize` to max 200, calculates `skip`, delegates to repository; register as scoped in `Program.cs`
 
 ## Phase 4: Backend — Controller
 
