@@ -74,19 +74,19 @@
           }
 
           @if (getSystemText(parsed.system); as sysText) {
-            <div class="system-block">
-              <div class="block-label">System</div>
+            <details class="system-block" open>
+              <summary class="block-label">System</summary>
               <div class="block-content">{{ sysText }}</div>
-            </div>
+            </details>
           }
 
           @if (parsed.messages && parsed.messages.length > 0) {
             <div class="messages">
               @for (msg of parsed.messages; track $index) {
-                <div [class]="'message message-' + msg.role">
-                  <div class="message-role">{{ msg.role }}</div>
+                <details [class]="'message message-' + msg.role" open>
+                  <summary class="message-role">{{ msg.role }}</summary>
                   <div class="message-content">{{ getMessageText(msg.content) }}</div>
-                </div>
+                </details>
               }
             </div>
           }
@@ -140,10 +140,10 @@
                 <span class="param"><b>out</b> {{ streamed.outputTokens }}</span>
               }
             </div>
-            <div class="message message-assistant">
-              <div class="message-role">assistant</div>
+            <details class="message message-assistant" open>
+              <summary class="message-role">assistant</summary>
               <div class="message-content">{{ streamed.assistantText || '(no text content)' }}</div>
-            </div>
+            </details>
           </div>
         } @else {
           <pre class="raw-view">{{ d.responseBody }}</pre>
@@ -162,10 +162,10 @@
           @if (parsedResp.content && parsedResp.content.length > 0) {
             @for (block of parsedResp.content; track $index) {
               @if (block.type === 'text') {
-                <div class="message message-assistant">
-                  <div class="message-role">assistant</div>
+                <details class="message message-assistant" open>
+                  <summary class="message-role">assistant</summary>
                   <div class="message-content">{{ block.text }}</div>
-                </div>
+                </details>
               }
             }
           }
